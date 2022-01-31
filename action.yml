@@ -8,11 +8,17 @@ inputs:
   command:
     description: command to execute
     required: true
-  arguments:
-    description: arguments for command
+  pre_command_arguments:
+    description: arguments for p4 that go before p4 command
+    required: false
+  post_command_arguments:
+    description: arguments for p4 that go before p4 command
     required: false
   working_directory:
     description: working directory for command (defaults to root)
+    required: false
+  spec:
+    description: This is the P4 spec contents for the resource you are creating
     required: false
 
 
@@ -23,8 +29,6 @@ outputs:
 runs:
   using: 'docker'
   image: 'Dockerfile'
-  args:
-    - ${{ inputs.command }}
 
 branding:
   color: blue

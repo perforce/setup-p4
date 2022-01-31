@@ -1,14 +1,15 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-set -e
+set -ex
 
-echo "Hello $1"
-time=$(date)
-echo "::set-output name=time::$time"
-
+df -h
 exit 0
+echo "::debug:: command is: $INPUT_COMMAND"
+echo "::debug:: pre_command_arguments is: $INPUT_PRE_COMMAND_ARGUMENTS"
+echo "::debug:: post_command_arguments is: $INPUT_POST_COMMAND_ARGUMENTS"
+echo "::debug:: working_directory is: $INPUT_WORKING_DIRECTORY"
+echo "::debug:: spec is: $INPUT_SPEC"
 
-# fail if INPUT_COMMAND is not set
 if [ -z "${INPUT_COMMAND}" ]; then
   echo "Required variable \`command\` is missing"
   exit 1
@@ -18,23 +19,16 @@ if [ -n "${INPUT_WORKING_DIRECTORY}" ]; then
   cd "${INPUT_WORKING_DIRECTORY}"
 fi
 
-# assemble operation
-if [ -z "${INPUT_ARGUMENTS}" ]; then
-  OPERATION="packer ${INPUT_COMMAND}"
+COMMAND="p4 $INPUT_PRE_COMMAND_ARGUMENTS $INPUT_COMMAND $INPUT_POST_COMMAND_ARGUMENTS"
+
+echo "::debug:: Executing command: ${COMMAND}"
+
+if [ "$INPUT_COMMAND" = "login" ]; then
+  echo "${P4_PASSWORD}" | ${COMMAND}
+elif [ -z "${INPUT_SEPC}" ]; then
+  echo "${INPUT_SPEC}" | ${COMMAND}
 else
-  OPERATION="packer ${INPUT_COMMAND} ${INPUT_ARGUMENTS}"
+  ${COMMAND}
 fi
 
-echo "::debug:: Executing command: ${OPERATION}"
 
-# cast INPUT_TARGET string to "array"
-# shellcheck disable=SC2206
-TARGETS=(${INPUT_TARGET})
-
-# iterate over target(s)
-for TARGET in "${TARGETS[@]}"; do
-  echo "::debug:: Processing target ${TARGET}"
-
-  # shellcheck disable=SC2086
-  ${OPERATION} "${TARGET}"
-done
