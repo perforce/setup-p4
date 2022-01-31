@@ -1,0 +1,18 @@
+on: [push]
+
+jobs:
+  internal:
+    runs-on: ubuntu-latest
+    name: test private action
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Hello world action step
+        uses: ./ # Uses an action in the root directory
+        id: hello
+        with:
+          command: 'Mona the Octocat'
+      
+      - name: Get the output time
+        run: echo "The time was ${{ steps.hello.outputs.time }}"
