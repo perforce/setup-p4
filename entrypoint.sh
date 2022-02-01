@@ -1,9 +1,7 @@
-#!/bin/bash
+#!/bin/ash
 
 set -ex
 
-df -h
-exit 0
 echo "::debug:: command is: $INPUT_COMMAND"
 echo "::debug:: pre_command_arguments is: $INPUT_PRE_COMMAND_ARGUMENTS"
 echo "::debug:: post_command_arguments is: $INPUT_POST_COMMAND_ARGUMENTS"
