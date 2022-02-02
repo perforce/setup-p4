@@ -1,18 +1,18 @@
 ---
 
-name: Perforce GitHub Actions
+name: Perforce P4 GitHub Actions
 author: Andy Boutte <aboutte@perforce.com>
-description: Run p4 commands
+description: Run p4 commands withing your GitHub Actions Workflows
 
 inputs:
   command:
-    description: command to execute
+    description: p4 command to execute
     required: true
-  pre_command_arguments:
-    description: arguments for p4 that go before p4 command
+  global_options:
+    description: arguments for p4 cli that go before p4 command
     required: false
-  post_command_arguments:
-    description: arguments for p4 that go before p4 command
+  arguments:
+    description: arguments for p4 cli that go after p4 command
     required: false
   working_directory:
     description: working directory for command (defaults to root)
@@ -21,10 +21,11 @@ inputs:
     description: This is the P4 spec contents for the resource you are creating
     required: false
 
-
 outputs:
-  stdout:
-    description: stdout of p4 command
+  # stdout:
+  #   description: stdout of p4 command
+  status:
+    description: status code that p4 command exits with
 
 runs:
   using: docker
