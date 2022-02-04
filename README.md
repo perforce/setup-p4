@@ -126,7 +126,6 @@ The [P4 CLI can utilize environment variables](https://www.perforce.com/manuals/
 - Step
 
 
-
 ```yaml
 - name: p4 sync
   uses: perforce/p4-github-actions@master
@@ -250,6 +249,11 @@ GitHub Hosted Actions provide ~30GB of disk space to your workflow.  Depending o
 ### p4 Binary
 
 [GitHub Actions virtual environment](https://github.com/actions/virtual-environments) does not have the p4 binary and Perforce does not have an official p4 cli Docker Image.  This means the p4 binary must be downloaded at the start of each workflow execution. 
+
+
+### Build Tool Availability in GitHub Actions
+
+If I am a pipeline developer using GitHb Actions I dont have many (any?) options for getting my build tool (unreal engine, unity, etc) into GitHub Actions.  My option is to create a build server and use Self Hosted GitHub Actions.
 
 
 
