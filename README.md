@@ -1,12 +1,32 @@
 # GitHub Action: p4
 
-
-
 > GitHub Action for running Perforce Helix Core P4 CLI [commands](https://www.perforce.com/manuals/cmdref/Content/CmdRef/commands.html).
 
-
-
-[TOC]
+- [GitHub Action: p4](#github-action-p4)
+  - [Usage](#usage)
+    - [Inputs](#inputs)
+      - [`command`](#command)
+      - [`global_options`](#global_options)
+      - [`arguments`](#arguments)
+      - [`working_directory`](#working_directory)
+      - [`spec`](#spec)
+    - [Configuration](#configuration)
+      - [Environment Variables](#environment-variables)
+      - [Secrets](#secrets)
+  - [What This Action Does](#what-this-action-does)
+    - [p4 login](#p4-login)
+    - [`STDIN` required](#stdin-required)
+    - [Everything Else](#everything-else)
+  - [Detailed logs](#detailed-logs)
+  - [Limitations](#limitations)
+    - [Network Connectivity](#network-connectivity)
+    - [Available Disk Space](#available-disk-space)
+    - [p4 Binary](#p4-binary)
+    - [Build Tool Availability in GitHub Actions](#build-tool-availability-in-github-actions)
+  - [Author Information](#author-information)
+  - [License](#license)
+  - [Contributer's Guide](#contributers-guide)
+  - [TODO](#todo)
 
 ## Usage
 
@@ -136,11 +156,7 @@ The [P4 CLI can utilize environment variables](https://www.perforce.com/manuals/
     arguments: -f
 ```
 
-
-
 Reference the `example.yml.disable`Workflow file in this repository for examples of setting environment variables at each level.
-
-
 
 #### Secrets
 
@@ -156,16 +172,12 @@ All p4 commands will require valid authentication to your Helix Core server.  Mo
     	P4PASSWD: ${{ secrets.P4PASSWD }}
 ```
 
-
-
 To use the above step your Github Repository will need to have a Secret named `P4PASSWD`and the contents will need to be the Helix Core password of the user you want to authenticate as.
 
 You can name your GitHub Repositry Secret anything you would like but the Action expects you to set the environment variable `P4PASSWD` value to your secret.
 
 
-
 ## What This Action Does
-
 
 
 1) Installs the p4 CLI
@@ -174,77 +186,50 @@ You can name your GitHub Repositry Secret anything you would like but the Action
    2) `STDIN` required
    3) everything else
 
-
+This is how the command gets built up:
 
 ```bash
 COMMAND="p4 $INPUT_GLOBAL_OPTIONS $INPUT_COMMAND $INPUT_ARGUMENTS"
 ```
 
 
-
 ### p4 login
 
-
-
 The `p4 login` command will read the user password from STDIN so `$P4PASSWD` gets echoed into `$COMMAND`.
-
 
 
 ```bash
 echo "${P4PASSWD}" | ${COMMAND}
 ```
 
-
-
 ### `STDIN` required
 
-
-
 This command format is used whenever a p4 resource must be created or updated.  The contents of your `spec` are passed to STDIN of p4 command.
-
-
 
 ```bash
 echo "${INPUT_SPEC}" | ${COMMAND}
 ```
 
-
-
 ### Everything Else
-
-
 
 ```bash
 ${COMMAND}
 ```
 
-
-
-
-
 ## Detailed logs
-
-
 
 To enable debug logging, create a GitHub Repostiry Secret named `ACTIONS_STEP_DEBUG` with the value `true`. See [here](https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/enabling-debug-logging) for more information.
 
 
-
 ## Limitations
-
-
 
 ### Network Connectivity
 
 GitHub Hosted Actions run in Azure so the list of [Azure IPv4 addresses](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#ip-addresses) must be able to reach your Helix Core instance.  
 
-
-
 ### Available Disk Space
 
 GitHub Hosted Actions provide ~30GB of disk space to your workflow.  Depending on your P4 Client Depot mapping you may run out of disk space.  Your options are to update your Depot mapping to reduce what data is pulled down or switching to [Self Hosted GitHub Actions](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners). 
-
-
 
 ### p4 Binary
 
@@ -254,7 +239,6 @@ GitHub Hosted Actions provide ~30GB of disk space to your workflow.  Depending o
 ### Build Tool Availability in GitHub Actions
 
 If I am a pipeline developer using GitHb Actions I dont have many (any?) options for getting my build tool (unreal engine, unity, etc) into GitHub Actions.  My option is to create a build server and use Self Hosted GitHub Actions.
-
 
 
 ## Author Information
@@ -279,5 +263,3 @@ TODO
 ## TODO
 
 - create GitHub Action output from the stdout of the p4 command.  https://trstringer.com/github-actions-multiline-strings/
-
-
