@@ -45,7 +45,7 @@ jobs:
       P4PORT: ssl:helixcore.example.com:1666
       P4USER: joe
     steps:
-    	# Checkout assets stored in GitHub
+      # Checkout assets stored in GitHub
       - name: Checkout
         uses: actions/checkout@v2
 
