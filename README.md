@@ -25,7 +25,7 @@
     - [Build Tool Availability in GitHub Actions](#build-tool-availability-in-github-actions)
   - [Author Information](#author-information)
   - [License](#license)
-  - [Contributer's Guide](#contributers-guide)
+  - [contributor's Guide](#contributors-guide)
   - [TODO](#todo)
 
 ## Usage
@@ -255,7 +255,7 @@ TODO
 
 
 
-## Contributer's Guide
+## contributor's Guide
 
 TODO
 
