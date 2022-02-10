@@ -14,12 +14,13 @@ inputs:
   arguments:
     description: arguments for p4 cli that go after p4 command
     required: false
-  working_directory:
-    description: working directory for command (defaults to root)
-    required: false
   spec:
     description: This is the P4 spec contents for the resource you are creating
     required: false
+  p4_version:
+    description: Version of P4 binary to use 
+    required: false
+    default: 21.2
 
 outputs:
   # stdout:
@@ -28,8 +29,8 @@ outputs:
     description: status code that p4 command exits with
 
 runs:
-  using: docker
-  image: Dockerfile
+  using: 'node12'
+  main: 'dist/index.js'
 
 branding:
   color: blue

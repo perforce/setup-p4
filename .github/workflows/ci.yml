@@ -1,27 +1,29 @@
-on: [push]
+on:
+  workflow_dispatch:
+  push:
 
 name: CI
 
 jobs:
-  
-  shellcheck:
-    runs-on: ubuntu-latest
-    name: shellcheck
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Run ShellCheck
-        uses: ludeeus/action-shellcheck@master
 
   p4-info:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2019, ubuntu-20.04, ubuntu-18.04, macos-10.15, windows-2022, windows-2016, macos-11] # these are the github hosted OSes
+  
     name: p4 info
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: p4 setup
+        uses: ./
+        id: setup
+        with:
+          command: setup
+          p4_version: 21.2
 
       - name: p4 info
         uses: ./

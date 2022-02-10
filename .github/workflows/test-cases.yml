@@ -1,4 +1,6 @@
-on: [push]
+on:
+  workflow_dispatch:
+  push:
 
 name: Test Cases
 
@@ -15,6 +17,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: p4 setup
+        uses: ./
+        id: setup
+        with:
+          command: setup
+          p4_version: 21.2
 
       - name: p4 login
         uses: ./ # Uses the action in the root directory

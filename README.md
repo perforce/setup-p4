@@ -257,7 +257,12 @@ TODO
 
 ## contributor's Guide
 
-TODO
+Run the following to "package" the action into the dist directory:
+
+```
+npm install
+ncc build index.js --out dist
+```
 
 
 ## TODO
