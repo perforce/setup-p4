@@ -49,7 +49,7 @@ try {
         
         if (setup.mapOS(platform) == 'windows') {
             core.debug("Running OS is windows.");
-            if (shell.exec(`echo | set /p="foobar${process.env.P4PASSWD}" | p4 login`).code !== 0) {
+            if (shell.exec(`echo | set /p="${process.env.P4PASSWD}" | p4 login`).code !== 0) {
                 core.setFailed("Failed to log into Helix Core");
             }
             
