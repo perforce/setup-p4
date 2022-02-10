@@ -21,6 +21,10 @@ inputs:
     description: Version of P4 binary to use 
     required: false
     default: 21.2
+  working_directory:
+    description: 'The working directory to use when running p4 commands.'
+    required: false
+    default: '.'
 
 outputs:
   # stdout:

@@ -25,7 +25,7 @@
     - [Build Tool Availability in GitHub Actions](#build-tool-availability-in-github-actions)
   - [Author Information](#author-information)
   - [License](#license)
-  - [contributor's Guide](#contributors-guide)
+  - [Contributor's Guide](#contributors-guide)
   - [TODO](#todo)
 
 ## Usage
@@ -48,6 +48,14 @@ jobs:
       # Checkout assets stored in GitHub
       - name: Checkout
         uses: actions/checkout@v2
+
+      # Install p4 cli and cache it if we are running within a self hosted runner
+      - name: p4 setup
+        uses:
+        id: setup
+        with:
+          command: setup
+          p4_version: 21.2
 
       # Authenticate to Helix Core using P4PASSWD GitHub Secret
       - name: p4 login
@@ -104,6 +112,8 @@ jobs:
 
 `command` supports all P4 [CLI commands](https://www.perforce.com/manuals/cmdref/Content/CmdRef/commands.html).
 
+
+Note: There is one special command that does not come from p4 and that is `setup`
 
 
 #### `global_options`
@@ -255,7 +265,7 @@ TODO
 
 
 
-## contributor's Guide
+## Contributor's Guide
 
 Run the following to "package" the action into the dist directory:
 
