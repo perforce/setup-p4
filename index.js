@@ -13,6 +13,7 @@ try {
     const command = `p4 ${globalOptions} ${inputCommand} ${arguments}`
     const platform = os.platform();
     const p4SemVersion = setup.p4semversion(p4Version)
+    const cwd = core.getInput('working_directory');
     
     core.debug(`p4 semversion is: ${p4SemVersion}`);
     core.debug(`command is: ${inputCommand}`);
@@ -20,6 +21,9 @@ try {
     core.debug(`arguments is: ${arguments}`);
     core.debug(`spec is: ${spec}`);
     core.debug(`p4 version is: ${p4Version}`);
+    core.debug(`working directory is set to ${cwd}`)
+
+    process.chdir(cwd)
     
     if( inputCommand == "setup") {
         toolPath = tc.find('p4', p4SemVersion);
