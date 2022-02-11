@@ -28,3 +28,7 @@ labels: bug
 ```sh
 
 ```
+
+## Debug Logging
+
+<!-- Enable [debug logging](https://github.com/perforce/github-actions-p4#detailed-logs) for your workflow and paste it here -->

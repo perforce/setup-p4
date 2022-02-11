@@ -26,7 +26,6 @@
   - [Author Information](#author-information)
   - [License](#license)
   - [Contributor's Guide](#contributors-guide)
-  - [TODO](#todo)
 
 ## Usage
 
@@ -228,7 +227,7 @@ ${COMMAND}
 
 ## Detailed logs
 
-To enable debug logging, create a GitHub Repostiry Secret named `ACTIONS_STEP_DEBUG` with the value `true`. See [here](https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/enabling-debug-logging) for more information.
+To enable debug logging, create a GitHub Repository Secret named `ACTIONS_STEP_DEBUG` with the value `true`. See [here](https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/enabling-debug-logging) for more information.  Run your workflow again and review the new debug logging.
 
 
 ## Limitations
@@ -255,7 +254,7 @@ If I am a pipeline developer using GitHb Actions I dont have many (any?) options
 
 This module is maintained by the contributors listed on [GitHub](https://github.com/perforce/p4-github-actions/graphs/contributors).
 
-Development of this module was sponsored by [Perforce](https://perforce.com).
+Development of this module is sponsored by [Perforce](https://perforce.com).
 
 
 
@@ -273,8 +272,3 @@ Run the following to "package" the action into the dist directory:
 npm install
 ncc build index.js --out dist
 ```
-
-
-## TODO
-
-- create GitHub Action output from the stdout of the p4 command.  https://trstringer.com/github-actions-multiline-strings/
