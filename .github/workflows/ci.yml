@@ -6,11 +6,11 @@ name: CI
 
 jobs:
 
-  p4-info:
+  smoke:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-2019, ubuntu-20.04, ubuntu-18.04, macos-10.15, windows-2022, windows-2016, macos-11] # these are the github hosted OSes
+        os: [windows-2019, ubuntu-20.04, ubuntu-18.04, macos-10.15, windows-2022, windows-2016, macos-11]
   
     name: p4 info
 
@@ -22,10 +22,79 @@ jobs:
         uses: ./
         id: setup
         with:
-          command: setup
+          setup: true
           p4_version: 21.2
 
       - name: p4 info
         uses: ./
         with:
           command: -V
+
+
+  test-cases-01:
+    runs-on: ubuntu-latest
+    name: test case 01
+    env:
+      P4PORT: ${{ secrets.P4PORT }}
+      P4USER: ${{ secrets.P4USER }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: p4 setup
+        uses: ./
+        id: setup
+        with:
+          setup: true
+          p4_version: 21.2
+
+      - name: p4 trust
+        uses: ./
+        id: trust
+        with:
+          command: trust
+
+      - name: p4 login
+        uses: ./
+        id: login
+        with:
+          command: login
+        env:
+          P4PASSWD: ${{ secrets.P4PASSWD }}
+
+      - name: p4 client
+        uses: ./
+        id: client
+        with:
+          command: client
+          arguments: -i
+
+          spec: |
+            Client:	github-actions-p4
+
+            Owner: ${{ secrets.P4USER }}
+
+            Description:
+              Created by ${{ secrets.P4USER }}.
+
+            Root:	/tmp
+
+            Options:	noallwrite noclobber nocompress unlocked modtime rmdir
+
+            SubmitOptions:	leaveunchanged
+
+            LineEnd:	local
+
+            View:
+              //guest/perforce_software/sdp/... //github-actions-p4/guest/perforce_software/sdp/...
+
+      - name: p4 sync
+        uses: ./
+        id: sync
+        env:
+          P4CLIENT: github-actions-p4
+        with:
+          command: sync
+          arguments: -f
+
