@@ -13650,16 +13650,22 @@ try {
     const cwd = core.getInput('working_directory');
     
     core.debug(`p4 semversion is: ${p4SemVersion}`);
-    core.debug(`command is: ${inputCommand}`);
+    core.debug(`input command is: ${inputCommand}`);
+    core.debug(`command is: ${command}`);
     core.debug(`global options is: ${globalOptions}`);
     core.debug(`arguments is: ${arguments}`);
     core.debug(`spec is: ${spec}`);
     core.debug(`p4 version is: ${p4Version}`);
-    console.log(`the working directory is set to ${cwd}`)
+    core.debug(`working directory is set to: ${cwd}`)
+    core.debug(`setup input is: ${core.getInput('setup')}`)
 
     process.chdir(cwd)
     
-    if( inputCommand == "setup") {
+    if ( core.getInput('setup') == 'true' ) {
+        core.info(`setup specified so running setup routine`);
+        if (inputCommand || globalOptions || arguments || spec ) {
+            core.warning("In setup routine but command, global_options, arguments, or spec specified.  Ignoring these inputs. ");
+        }
         toolPath = tc.find('p4', p4SemVersion);
         if (toolPath) {
             core.info(`Found in cache @ ${toolPath}`);
