@@ -2,7 +2,7 @@
 
 name: Perforce P4 GitHub Actions
 author: Andy Boutte <aboutte@perforce.com>
-description: Run p4 commands withing your GitHub Actions Workflows
+description: Run p4 commands within your GitHub Actions Workflows
 
 inputs:
   command:
@@ -25,12 +25,6 @@ inputs:
     description: 'The working directory to use when running p4 commands.'
     required: false
     default: '.'
-
-outputs:
-  # stdout:
-  #   description: stdout of p4 command
-  status:
-    description: status code that p4 command exits with
 
 runs:
   using: 'node12'

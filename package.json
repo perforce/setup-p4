@@ -1,4 +1,28 @@
 {
+  "name": "setup-p4",
+  "version": "0.1.0",
+  "description": "Download p4 and run p4 commands within GitHub Actions",
+  "main": "index.js",
+  "scripts": {
+    "package": "ncc build index.js -o dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/perforce/github-actions-p4.git"
+  },
+  "keywords": [
+    "GitHub",
+    "Actions",
+    "Perforce",
+    "Helix Core",
+    "p4"
+  ],
+  "author": "Andy Boutte",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/perforce/github-actions-p4/issues"
+  },
+  "homepage": "https://github.com/perforce/github-actions-p4",
   "dependencies": {
     "@actions/core": "^1.6.0",
     "@actions/tool-cache": "^1.7.1",

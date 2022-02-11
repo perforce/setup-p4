@@ -1,8 +1,11 @@
 # GitHub Action: p4
 
+# :gear: `setup-p4` ![](https://github.com/perforce/github-actions-p4/workflows/Tests/badge.svg)
+
 > GitHub Action for running Perforce Helix Core P4 CLI [commands](https://www.perforce.com/manuals/cmdref/Content/CmdRef/commands.html).
 
 - [GitHub Action: p4](#github-action-p4)
+- [:gear: `setup-p4` !](#gear-setup-p4-)
   - [Usage](#usage)
     - [Inputs](#inputs)
       - [`command`](#command)
@@ -10,6 +13,7 @@
       - [`arguments`](#arguments)
       - [`working_directory`](#working_directory)
       - [`spec`](#spec)
+      - [`p4_version`](#p4_version)
     - [Configuration](#configuration)
       - [Environment Variables](#environment-variables)
       - [Secrets](#secrets)
@@ -53,7 +57,6 @@ jobs:
         uses:
         id: setup
         with:
-          command: setup
           p4_version: 21.2
 
       # Authenticate to Helix Core using P4PASSWD GitHub Secret
@@ -75,9 +78,9 @@ jobs:
 
           spec: |
             Client:	sdp-dev-pipeline
-            Owner:	andy_boutte
+            Owner:	andy
             Description:
-              Created by andy_boutte.
+              Created by andy.
             Root:	/tmp
             Options:	noallwrite noclobber nocompress unlocked modtime rmdir
             SubmitOptions:	leaveunchanged
@@ -104,15 +107,13 @@ jobs:
 | `arguments`         | arguments that are p4 cli command specific                   | no       |         |
 | `working_directory` | directory to change into before running p4 command           | no       |         |
 | `spec`              | spec content that is fed into p4 stdin to create/update resources | no       |         |
+| `p4_version`        | version of p4 binary to download and cache | no       |  21.2       |
 
 
 
 #### `command`
 
 `command` supports all P4 [CLI commands](https://www.perforce.com/manuals/cmdref/Content/CmdRef/commands.html).
-
-
-Note: There is one special command that does not come from p4 and that is `setup`
 
 
 #### `global_options`
@@ -125,11 +126,9 @@ Common `global_options` you may want to set would include
 - `P4USER` by including `-u joe` in `global_options` 
 
 
-
 #### `arguments`
 
-`arguments `supports all P4 Command arguments.  To find avaiable arguments first find the [command documentation](https://www.perforce.com/manuals/cmdref/Content/CmdRef/commands.html) and then look under the Options section. 
-
+`arguments `supports all P4 Command arguments.  To find available arguments first find the [command documentation](https://www.perforce.com/manuals/cmdref/Content/CmdRef/commands.html) and then look under the Options section. 
 
 
 #### `working_directory`
@@ -137,10 +136,15 @@ Common `global_options` you may want to set would include
 The Action will change directory to what is provided in `working_directory`.  Note that the specified directory must exist.  
 
 
-
 #### `spec`
 
 If `spec` is provided the contents of `spec` will be passed to the `STDIN` of the p4 command.  In `arguments` include the option `-i` so that p4 reads from `STDIN` instead of opening your `P4EDITOR`.
+
+#### `p4_version`
+
+`p4_version` defines the version of the `p4` binary that will be downloaded and cached.  `p4_version` should only be specified in a `setup` GitHub Action Step. In this step the it will check if the specified version is already present, if it is not it will be loaded, cached, and added to the `$PATH`.  All subsequent steps will be able to use the `p4` found in the `$PATH`.
+
+See our [CI workflows](https://github.com/perforce/github-actions-p4/tree/master/.github/workflows) for examples.
 
 
 
@@ -165,7 +169,7 @@ The [P4 CLI can utilize environment variables](https://www.perforce.com/manuals/
     arguments: -f
 ```
 
-Reference the `example.yml.disable`Workflow file in this repository for examples of setting environment variables at each level.
+Reference the `example.yml.disable` Workflow file in this repository for examples of setting environment variables at each level.
 
 #### Secrets
 
@@ -176,14 +180,14 @@ All p4 commands will require valid authentication to your Helix Core server.  Mo
   uses: perforce/p4-github-actions@master
   with:
     command: login
-    global_options: '-p public.perforce.com:1666 -u andy_boutte'
+    global_options: '-p helixcore.example.com:1666 -u andy'
     env:
     	P4PASSWD: ${{ secrets.P4PASSWD }}
 ```
 
 To use the above step your Github Repository will need to have a Secret named `P4PASSWD`and the contents will need to be the Helix Core password of the user you want to authenticate as.
 
-You can name your GitHub Repositry Secret anything you would like but the Action expects you to set the environment variable `P4PASSWD` value to your secret.
+You can name your GitHub Repository Secret anything you would like but the Action expects you to set the environment variable `P4PASSWD` value to your secret.
 
 
 ## What This Action Does
@@ -247,7 +251,7 @@ GitHub Hosted Actions provide ~30GB of disk space to your workflow.  Depending o
 
 ### Build Tool Availability in GitHub Actions
 
-If I am a pipeline developer using GitHb Actions I dont have many (any?) options for getting my build tool (unreal engine, unity, etc) into GitHub Actions.  My option is to create a build server and use Self Hosted GitHub Actions.
+If I am a pipeline developer using GitHb Actions I don't have many (any?) options for getting my build tool (unreal engine, unity, etc) into GitHub Actions.  My option is to create a build server and use Self Hosted GitHub Actions.
 
 
 ## Author Information

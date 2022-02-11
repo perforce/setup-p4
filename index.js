@@ -25,7 +25,11 @@ try {
 
     process.chdir(cwd)
     
-    if( inputCommand == "setup") {
+    if( p4Version ) {
+        core.info(`p4_version specified so running setup routine`);
+        if (inputCommand || globalOptions || arguments || spec ) {
+            core.warning("In setup routine but command, global_options, arguments, or spec specified.  Ignoring these inputs. ");
+        }
         toolPath = tc.find('p4', p4SemVersion);
         if (toolPath) {
             core.info(`Found in cache @ ${toolPath}`);
