@@ -28,6 +28,9 @@
   - [Author Information](#author-information)
   - [License](#license)
   - [Contributor's Guide](#contributors-guide)
+    - [act](#act)
+      - [.actrc](#actrc)
+      - [my.secrets](#mysecrets)
 
 ## Usage
 
@@ -274,9 +277,35 @@ TODO
 
 ## Contributor's Guide
 
-Run the following to "package" the action into the dist directory:
+Here are the steps for contributing:
+
+1) fork the project
+2) 2) clone your fork to your workstation
+3) run `npm install` to install all the dependencies
+4) run `npm run package` to package the action
+5) create a `.actrc` and `act.secrets` file for testing locally (examples below)
+6) run `act`
+7) commit changes and submit PR
+
+### act
+
+[act](https://github.com/nektos/act) can be used to test GitHub Actions locally before having to commit any code. 
+
+#### .actrc
+
+The `.actrc` can be used to provide [default configuration](https://github.com/nektos/act#configuration) to `act`.  Example `.actrc` file to have `act` use the `act.secrets` file
 
 ```
-npm install
-ncc build index.js --out dist
+--secret-file act.secrets
+```
+
+
+#### my.secrets
+
+Create a `my.secrets` file (ignored via .gitignore file) that will allow the Action to authenticate to your Helix Core. 
+
+```
+P4PASSWD=""
+P4PORT=""
+P4USER=""
 ```

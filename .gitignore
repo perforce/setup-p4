@@ -24,3 +24,7 @@ node_modules/
 
 .env
 .vscode
+
+.actrc
+.envrc
+act.secrets
