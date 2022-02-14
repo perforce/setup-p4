@@ -1,5 +1,5 @@
 {
-  "name": "setup-p4",
+  "name": "github-actions-p4",
   "version": "0.1.0",
   "description": "Download p4 and run p4 commands within GitHub Actions",
   "main": "index.js",
@@ -20,7 +20,7 @@
     "p4"
   ],
   "author": "Andy Boutte",
-  "license": "MIT",
+  "license": "See LICENSE file",
   "bugs": {
     "url": "https://github.com/perforce/github-actions-p4/issues"
   },
@@ -28,8 +28,6 @@
   "dependencies": {
     "@actions/core": "^1.6.0",
     "@actions/tool-cache": "^1.7.1",
-    "fs": "^0.0.1-security",
-    "os": "^0.1.2",
     "shelljs": "^0.8.5",
     "uuid": "^8.3.2"
   },
