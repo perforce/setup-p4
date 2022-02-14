@@ -267,11 +267,21 @@ This module is maintained by the contributors listed on [GitHub](https://github.
 
 Development of this module is sponsored by [Perforce](https://perforce.com).
 
+## Support
 
+[![Support](https://img.shields.io/badge/Support-Community-yellow.svg)]
+
+github-actions-p4 is a community supported project and is not officially supported by Perforce
+Pull requests and issues are the responsibility of the project's moderator(s); this may be a vetted individual or team with members outside of the Perforce organization.
+Perforce does not officially support these projects, therefore all issues should be reported and managed via GitHub (not via Perforce's standard support process).
+
+## Code of Conduct
+
+See the CODE_OF_CONDUCT.md file
 
 ## License
 
-TODO
+See the LICENSE file
 
 
 
