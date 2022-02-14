@@ -4,7 +4,9 @@
   "description": "Download p4 and run p4 commands within GitHub Actions",
   "main": "index.js",
   "scripts": {
-    "package": "ncc build index.js -o dist"
+    "package": "ncc build index.js -o dist",
+    "lint": "eslint index.js",
+    "format": "prettier --write index.js"
   },
   "repository": {
     "type": "git",
@@ -30,5 +32,10 @@
     "os": "^0.1.2",
     "shelljs": "^0.8.5",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.33.3",
+    "eslint": "^8.9.0",
+    "prettier": "^2.5.1"
   }
 }
