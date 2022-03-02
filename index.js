@@ -1,12 +1,13 @@
 const core = require("@actions/core");
 const tc = require("@actions/tool-cache");
-const shell = require("shelljs");
+require("shelljs/global");
 const os = require("os");
 const setup = require("./lib/setup-p4");
 
 try {
   const inputCommand = core.getInput("command");
   const globalOptions = core.getInput("global_options");
+  /* eslint-disable no-shadow-restricted-names */
   const arguments = core.getInput("arguments");
   const spec = core.getInput("spec");
   const p4Version = core.getInput("p4_version");
@@ -27,11 +28,18 @@ try {
 
   process.chdir(cwd);
 
+  // Change all nonzero exit codes within shelljs into fatal
+  // Without this p4 commands that exit with a nonzero would be ignored and GitHub Actions
+  // would continue onto the next workflow step
+  // https://github.com/shelljs/shelljs#configfatal
+  /* eslint-disable no-undef */
+  config.fatal = true;
+
   if (core.getInput("setup") == "true") {
     core.info(`setup specified so running setup routine`);
     if (inputCommand || globalOptions || arguments || spec) {
       core.warning(
-        "In setup routine but command, global_options, arguments, or spec specified.  Ignoring these inputs. "
+        "In setup routine but command, global_options, arguments, or spec specified.  Ignoring these inputs."
       );
     }
 
@@ -39,19 +47,21 @@ try {
     toolPath = tc.find("p4", p4SemVersion);
     if (toolPath) {
       core.info(`Found in cache @ ${toolPath}`);
-      const allNodeVersions = tc.findAllVersions("p4");
+      const allVersions = tc.findAllVersions("p4");
       core.debug(
-        `Found the following versions of p4 in the cache: ${allNodeVersions}`
+        `Found the following versions of p4 in the cache: ${allVersions}`
       );
       // since the version of the binary we need is found just add it to the PATH
       core.addPath(toolPath);
     } else {
-      core.info(`p4 not found in cache`);
+      core.info(`p4 version ${p4Version} not found in cache`);
       (async () => {
         try {
           await setup.run(p4Version);
         } catch (error) {
-          core.setFailed(error.message);
+          core.setFailed(
+            `Failed to run p4 setup routine with error: ${error.message}`
+          );
         }
       })();
     }
@@ -66,22 +76,28 @@ try {
 
     if (setup.mapOS(platform) == "windows") {
       core.debug("Running OS is windows.");
-      if (
-        shell.exec(`echo | set /p="${process.env.P4PASSWD}" | p4 login`)
-          .code !== 0
-      ) {
-        core.setFailed("Failed to log into Helix Core");
+      try {
+        exec(`echo | set /p="${process.env.P4PASSWD}" | p4 login`);
+      } catch (error) {
+        core.setFailed(
+          `Failed to log into Helix Core with error: ${error.message}`
+        );
       }
     } else {
       core.debug("Running OS is linux.");
-      if (shell.exec(`echo "${process.env.P4PASSWD}" | p4 login`).code !== 0) {
-        core.setFailed("Failed to log into Helix Core");
+      try {
+        exec(`echo "${process.env.P4PASSWD}" | p4 login`);
+      } catch (error) {
+        core.setFailed(
+          `Failed to log into Helix Core with error: ${error.message}`
+        );
       }
     }
   } else if (spec) {
     if (arguments.includes("-i")) {
       core.debug("`arguments` includes -i which is required");
     } else {
+      // TODO: once project name is set and public add URL to example in this message
       core.setFailed("spec being used but `arguments` does not included `-i`");
     }
 
@@ -89,31 +105,39 @@ try {
 
     if (setup.mapOS(platform) == "windows") {
       process.env["SPECENV"] = spec;
-      if (
-        shell.exec(`powershell.exe -Command echo $env:SPECENV | ${command}`, {
+      try {
+        exec(`powershell.exe -Command echo $env:SPECENV | ${command}`, {
           env: {
             ...process.env,
             ...process.env["SPECENV"],
           },
-        }).code !== 0
-      ) {
-        core.setFailed(`Failed to run command: ${inputCommand}`);
+        });
+      } catch (error) {
+        core.setFailed(
+          `Failed to run command ${inputCommand} with error: ${error.message}`
+        );
       }
     } else {
-      if (shell.exec(`echo "${spec}" | ${command}`).code !== 0) {
-        core.setFailed(`Failed to run command: ${inputCommand}`);
+      try {
+        exec(`echo "${spec}" | ${command}`);
+      } catch (error) {
+        core.setFailed(
+          `Failed to run command ${inputCommand} with error: ${error.message}`
+        );
       }
     }
   } else {
     core.debug("Standard p4 command with nothing from stdin");
-    if (
-      shell.exec(command, {
+    try {
+      exec(command, {
         env: {
           ...process.env,
         },
-      }).code !== 0
-    ) {
-      core.setFailed(`Failed to run command: ${inputCommand}`);
+      });
+    } catch (error) {
+      core.setFailed(
+        `Failed to run command ${inputCommand} with error: ${error.message}`
+      );
     }
   }
 } catch (error) {
