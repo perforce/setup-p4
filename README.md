@@ -15,6 +15,11 @@
     - [Configuration](#configuration)
       - [Environment Variables](#environment-variables)
       - [Secrets](#secrets)
+    - [Outputs](#outputs)
+      - [stdout](#stdout)
+      - [stderr](#stderr)
+      - [exit_code](#exit_code)
+      - [Output Usage](#output-usage)
   - [What This Action Does](#what-this-action-does)
     - [p4 login](#p4-login)
     - [`STDIN` required](#stdin-required)
@@ -26,6 +31,8 @@
     - [p4 Binary](#p4-binary)
     - [Build Tool Availability in GitHub Actions](#build-tool-availability-in-github-actions)
   - [Author Information](#author-information)
+  - [Support](#support)
+  - [Code of Conduct](#code-of-conduct)
   - [License](#license)
   - [Contributor's Guide](#contributors-guide)
     - [act](#act)
@@ -196,6 +203,40 @@ To use the above step your Github Repository will need to have a Secret named `P
 
 You can name your GitHub Repository Secret anything you would like but the Action expects you to set the environment variable `P4PASSWD` value to your secret.
 
+### Outputs
+
+This action creates three outputs for all p4 commands: stdout, stderr, and exit_code.
+
+#### stdout
+
+stderr will contain any standard output from the p4 command
+
+#### stderr
+
+stderr will contain any standard error output from the p4 command
+
+#### exit_code
+
+exit_code will be set to the exit code of the p4 command
+
+#### Output Usage
+
+The following is an example of how to use each of the outputs from this action:
+
+```
+- name: p4 depots
+  id: depots
+  uses: perforce/p4-github-actions@master
+  with:
+    command: depots
+
+- name: echo outputs from previous step
+  run: |
+    echo "this will print the outputs from the depots command in the previous step"
+    echo "${{ steps.depots.outputs.stdout }}      
+    echo "${{ steps.depots.outputs.stderr }}      
+    echo "${{ steps.depots.outputs.exit_code }} 
+```
 
 ## What This Action Does
 
