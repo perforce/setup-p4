@@ -13730,7 +13730,14 @@ try {
     if (setup.mapOS(platform) == "windows") {
       core.debug("Running OS is windows.");
       try {
-        exec(`echo | set /p="${process.env.P4PASSWD}" | p4 login`);
+        exec(
+          `echo | set /p="${process.env.P4PASSWD}" | p4 login`,
+          function (code, stdout, stderr) {
+            core.setOutput("exit_code", code);
+            core.setOutput("stdout", stdout);
+            core.setOutput("stderr", stderr);
+          }
+        );
       } catch (error) {
         core.setFailed(
           `Failed to log into Helix Core with error: ${error.message}`
@@ -13739,7 +13746,14 @@ try {
     } else {
       core.debug("Running OS is linux.");
       try {
-        exec(`echo "${process.env.P4PASSWD}" | p4 login`);
+        exec(
+          `echo "${process.env.P4PASSWD}" | p4 login`,
+          function (code, stdout, stderr) {
+            core.setOutput("exit_code", code);
+            core.setOutput("stdout", stdout);
+            core.setOutput("stderr", stderr);
+          }
+        );
       } catch (error) {
         core.setFailed(
           `Failed to log into Helix Core with error: ${error.message}`
@@ -13759,12 +13773,20 @@ try {
     if (setup.mapOS(platform) == "windows") {
       process.env["SPECENV"] = spec;
       try {
-        exec(`powershell.exe -Command echo $env:SPECENV | ${command}`, {
-          env: {
-            ...process.env,
-            ...process.env["SPECENV"],
+        exec(
+          `powershell.exe -Command echo $env:SPECENV | ${command}`,
+          function (code, stdout, stderr) {
+            core.setOutput("exit_code", code);
+            core.setOutput("stdout", stdout);
+            core.setOutput("stderr", stderr);
           },
-        });
+          {
+            env: {
+              ...process.env,
+              ...process.env["SPECENV"],
+            },
+          }
+        );
       } catch (error) {
         core.setFailed(
           `Failed to run command ${inputCommand} with error: ${error.message}`
@@ -13772,7 +13794,11 @@ try {
       }
     } else {
       try {
-        exec(`echo "${spec}" | ${command}`);
+        exec(`echo "${spec}" | ${command}`, function (code, stdout, stderr) {
+          core.setOutput("exit_code", code);
+          core.setOutput("stdout", stdout);
+          core.setOutput("stderr", stderr);
+        });
       } catch (error) {
         core.setFailed(
           `Failed to run command ${inputCommand} with error: ${error.message}`
@@ -13782,11 +13808,19 @@ try {
   } else {
     core.debug("Standard p4 command with nothing from stdin");
     try {
-      exec(command, {
-        env: {
-          ...process.env,
+      exec(
+        command,
+        function (code, stdout, stderr) {
+          core.setOutput("exit_code", code);
+          core.setOutput("stdout", stdout);
+          core.setOutput("stderr", stderr);
         },
-      });
+        {
+          env: {
+            ...process.env,
+          },
+        }
+      );
     } catch (error) {
       core.setFailed(
         `Failed to run command ${inputCommand} with error: ${error.message}`
