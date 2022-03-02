@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "npx @vercel/ncc build index.js -o dist && npx convert-action",
-    "test": "echo 'testing not implemented yet'",
+    "test": "jest --",
+    "coverage": "jest --collectCoverage --",
     "lint": "eslint index.js",
     "format": "prettier --write index.js"
   },
@@ -28,12 +29,13 @@
   "homepage": "https://github.com/perforce/github-actions-p4",
   "dependencies": {
     "@actions/core": "^1.6.0",
-    "@actions/tool-cache": "^1.7.1",
+    "@actions/tool-cache": "^1.7.1",    
     "shelljs": "^0.8.5",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.33.3",
+    "jest": "^27.5.1",
     "eslint": "^8.10.0",
     "prettier": "^2.5.1"
   }
