@@ -48,12 +48,13 @@ jobs:
         with:
           setup: true
           p4_version: 21.2
-
-      - name: p4 trust
-        uses: ./
-        id: trust
-        with:
-          command: trust
+      
+      # P4PORT is not using ssl so including trust will cause fatal error 
+      # - name: p4 trust
+      #   uses: ./
+      #   id: trust
+      #   with:
+      #     command: trust
 
       - name: p4 login
         uses: ./
@@ -97,4 +98,3 @@ jobs:
         with:
           command: sync
           arguments: -f
-
