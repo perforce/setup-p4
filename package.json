@@ -4,8 +4,8 @@
   "description": "Download p4 and run p4 commands within GitHub Actions",
   "main": "index.js",
   "scripts": {
-    "build": "npx @vercel/ncc build && npx convert-action",
-    "package": "ncc build index.js -o dist",
+    "build": "npx @vercel/ncc build index.js -o dist && npx convert-action",
+    "test": "echo 'testing not implemented yet'",
     "lint": "eslint index.js",
     "format": "prettier --write index.js"
   },
