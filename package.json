@@ -2,7 +2,7 @@
   "name": "github-actions-p4",
   "version": "0.1.0",
   "description": "Download p4 and run p4 commands within GitHub Actions",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "npx @vercel/ncc build index.js -o dist && npx convert-action",
     "test": "echo 'testing not implemented yet'",
