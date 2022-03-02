@@ -73,20 +73,13 @@ jobs:
 
           spec: |
             Client:	github-actions-p4
-
             Owner: ${{ secrets.P4USER }}
-
             Description:
               Created by ${{ secrets.P4USER }}.
-
             Root:	/tmp
-
             Options:	noallwrite noclobber nocompress unlocked modtime rmdir
-
             SubmitOptions:	leaveunchanged
-
             LineEnd:	local
-
             View:
               //guest/perforce_software/sdp/... //github-actions-p4/guest/perforce_software/sdp/...
 
