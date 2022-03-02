@@ -1,9 +1,6 @@
----
-
 name: Perforce P4 GitHub Actions
 author: Andy Boutte <aboutte@perforce.com>
 description: Run p4 commands within your GitHub Actions Workflows
-
 inputs:
   command:
     description: p4 command to execute
@@ -18,30 +15,27 @@ inputs:
     description: This is the P4 spec contents for the resource you are creating
     required: false
   p4_version:
-    description: Version of P4 binary to use 
+    description: Version of P4 binary to use
     required: false
     default: 21.2
   working_directory:
     description: The working directory to use when running p4 commands.
     required: false
-    default: '.'
+    default: .
   setup:
-    description: The setup routine is used to download, install, and cache to `p4_version`
+    description: 'The setup routine is used to download, install, and cache to `p4_version`'
     required: false
     default: false
-
 outputs:
   stdout:
-    description: 'Standard output from the p4 command'
+    description: Standard output from the p4 command
   stderr:
-    description: 'Standard error from the p4 command'
+    description: Standard error from the p4 command
   exit_code:
-    description: 'Exit code from p4 command'
-
+    description: Exit code from p4 command
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
-
+  using: node12
+  main: dist/index.js
 branding:
   color: blue
   icon: package
