@@ -15,7 +15,7 @@ jobs:
     - run: npm test
 
   smoke:
-    name: p4 info
+    name: smoke
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
