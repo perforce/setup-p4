@@ -7,6 +7,7 @@ name: CI
 jobs:
 
   unit:
+    name: unit
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -14,13 +15,11 @@ jobs:
     - run: npm test
 
   smoke:
+    name: p4 info
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-20.04, ubuntu-18.04, macos-10.15, macos-11, windows-2022, windows-2019]
-  
-    name: p4 info
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -37,10 +36,13 @@ jobs:
         with:
           command: -V
 
-
   integration:
-    runs-on: ubuntu-latest
     name: integration
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, ubuntu-18.04, macos-10.15, macos-11, windows-2022, windows-2019]
+
     env:
       P4PORT: ${{ secrets.P4PORT }}
       P4USER: ${{ secrets.P4USER }}
@@ -55,13 +57,6 @@ jobs:
         with:
           setup: true
           p4_version: 21.2
-      
-      # P4PORT is not using ssl so including trust will cause fatal error 
-      # - name: p4 trust
-      #   uses: ./
-      #   id: trust
-      #   with:
-      #     command: trust
 
       - name: p4 login
         uses: ./
