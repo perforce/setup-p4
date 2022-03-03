@@ -40,7 +40,7 @@ jobs:
 
   integration:
     runs-on: ubuntu-latest
-    name: test case 01
+    name: integration
     env:
       P4PORT: ${{ secrets.P4PORT }}
       P4USER: ${{ secrets.P4USER }}
