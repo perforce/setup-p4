@@ -38,7 +38,7 @@ jobs:
           command: -V
 
 
-  test-cases-01:
+  integration:
     runs-on: ubuntu-latest
     name: test case 01
     env:
