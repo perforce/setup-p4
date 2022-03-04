@@ -83,6 +83,11 @@ try {
             core.setOutput("exit_code", code);
             core.setOutput("stdout", stdout);
             core.setOutput("stderr", stderr);
+            if (code !== 0) {
+              core.setFailed(
+                `Failed to run command ${inputCommand} with error: ${stderr}`
+              );
+            }
           }
         );
       } catch (error) {
@@ -99,6 +104,11 @@ try {
             core.setOutput("exit_code", code);
             core.setOutput("stdout", stdout);
             core.setOutput("stderr", stderr);
+            if (code !== 0) {
+              core.setFailed(
+                `Failed to log into Helix Core with error: ${stderr}`
+              );
+            }
           }
         );
       } catch (error) {
@@ -126,6 +136,11 @@ try {
             core.setOutput("exit_code", code);
             core.setOutput("stdout", stdout);
             core.setOutput("stderr", stderr);
+            if (code !== 0) {
+              core.setFailed(
+                `Failed to run command '${inputCommand}' with error: ${stderr}`
+              );
+            }
           },
           {
             env: {
@@ -136,7 +151,7 @@ try {
         );
       } catch (error) {
         core.setFailed(
-          `Failed to run command ${inputCommand} with error: ${error.message}`
+          `Failed to run command '${inputCommand}'with error: ${error.message}`
         );
       }
     } else {
@@ -145,10 +160,15 @@ try {
           core.setOutput("exit_code", code);
           core.setOutput("stdout", stdout);
           core.setOutput("stderr", stderr);
+          if (code !== 0) {
+            core.setFailed(
+              `Failed to run command '${inputCommand}' with error: ${stderr}`
+            );
+          }
         });
       } catch (error) {
         core.setFailed(
-          `Failed to run command ${inputCommand} with error: ${error.message}`
+          `Failed to run command '${inputCommand}' with error: ${error.message}`
         );
       }
     }
@@ -161,6 +181,11 @@ try {
           core.setOutput("exit_code", code);
           core.setOutput("stdout", stdout);
           core.setOutput("stderr", stderr);
+          if (code !== 0) {
+            core.setFailed(
+              `Failed to run command '${inputCommand}' with error: ${stderr}`
+            );
+          }
         },
         {
           env: {
@@ -170,7 +195,7 @@ try {
       );
     } catch (error) {
       core.setFailed(
-        `Failed to run command ${inputCommand} with error: ${error.message}`
+        `Failed to run command '${inputCommand}' with error: ${error.message}`
       );
     }
   }
