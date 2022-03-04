@@ -1,0 +1,49 @@
+on: [push]
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    name: setup
+
+    # In GitHub Actions environment variables can be provided at the workflow level, job level, or step level. 
+    # See GitHub documentation for more details: https://docs.github.com/en/actions/learn-github-actions/environment-variables
+    env:
+      P4PORT: ${{ secrets.P4PORT }}
+      P4USER: ${{ secrets.P4USER }}
+
+    steps:
+      # Checkout assets stored in GitHub
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # Install p4 cli and cache it if we are running within a self hosted runner
+      - name: p4 setup
+        uses: perforce/setup-p4@master
+        with:
+          setup: true
+          p4_version: 21.2
+
+      - run: |
+          which p4
+          p4 -V         
+
+      - run: echo "${{ secrets.P4PASSWD }}" | p4 -p ${{ secrets.P4PORT }} -u ${{ secrets.P4USER }} login 
+      - run: |
+          cat <<EOF > /tmp/helix-core-client.cfg
+          Client:	github-actions-setup-p4
+          Owner:	andy_boutte
+          Description:
+            Created by 
+          Root:	/tmp
+          Options:	noallwrite noclobber nocompress unlocked modtime rmdir
+          SubmitOptions:	leaveunchanged
+          LineEnd:	local
+          View:
+            //guest/perforce_software/sdp/... //github-actions-setup-p4/guest/perforce_software/sdp/...
+          EOF
+      - run: cat /tmp/helix-core-client.cfg | p4 -p ${{ secrets.P4PORT }} -u ${{ secrets.P4USER }} client -i
+
+      - run: |
+          export P4CLIENT="github-actions-setup-p4"
+          p4 -p ${{ secrets.P4PORT }} -u ${{ secrets.P4USER }} sync
+
