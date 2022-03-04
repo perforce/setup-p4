@@ -1,5 +1,5 @@
-name: Perforce P4 GitHub Actions
-author: Andy Boutte <aboutte@perforce.com>
+name: Perforce Helix Core Actions
+author: Perforce Software
 description: Run p4 commands within your GitHub Actions Workflows
 inputs:
   command:
@@ -23,7 +23,7 @@ inputs:
     required: false
     default: .
   setup:
-    description: 'The setup routine is used to download, install, and cache to `p4_version`'
+    description: 'The setup routine is used to download, install, and cache the `p4_version`'
     required: false
     default: false
 outputs:
