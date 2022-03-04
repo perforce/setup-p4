@@ -1,8 +1,23 @@
-# :gear: `github-actions-p4` [![](https://github.com/perforce/github-actions-p4/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/perforce/github-actions-p4/actions/workflows/ci.yml)
+# :gear: `setup-p4` [![](https://github.com/perforce/setup-p4/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/perforce/setup-p4/actions/workflows/ci.yml)
+
+![license](https://img.shields.io/github/license/perforce/github-action-p4)
+[![GitHub tag](https://img.shields.io/github/tag/perforce/github-action-p4.svg)](https://github.com/perforce/github-action-p4/tags)
 
 > GitHub Action for running Perforce Helix Core P4 CLI [commands](https://www.perforce.com/manuals/cmdref/Content/CmdRef/commands.html).
 
-- [:gear: `github-actions-p4` ![](https://github.com/perforce/github-actions-p4/actions/workflows/ci.yml)](#gear-github-actions-p4-)
+This GitHub Action downloads, installs and configures Perforce Helix Core P4 CLI, so that it can be used as part of the workflow.
+
+In addition, the Action includes the following features:
+
+- This Action supports all GitHub Hosted Runner Operating Systems
+- Defaults to latest version of P4 CLI but can be overwritten 
+- All P4 CLI commands can be run from the Action
+- Uses GitHub Action Inputs for P4 CLI commands, arguments, and global options
+- The connection details of the Perforce Helix Core servers used by P4 CLI can be stored as secrets. 
+
+More features to come!
+
+- [:gear: `setup-p4` ![](https://github.com/perforce/setup-p4/actions/workflows/ci.yml)](#gear-setup-p4-)
   - [Usage](#usage)
     - [Inputs](#inputs)
       - [`command`](#command)
@@ -70,7 +85,7 @@ jobs:
 
       # Authenticate to Helix Core using P4PASSWD GitHub Secret
       - name: p4 login
-        uses: perforce/p4-github-actions@master
+        uses: perforce/setup-p4@master
         id: login
         with:
           command: login
@@ -99,7 +114,7 @@ jobs:
 
       # pull down assets from Helix Core
       - name: p4 sync
-        uses: perforce/p4-github-actions@master
+        uses: perforce/setup-p4@master
         id: sync
         env:
           P4CLIENT: sdp-dev-pipeline
@@ -154,7 +169,7 @@ If `spec` is provided the contents of `spec` will be passed to the `STDIN` of th
 
 `p4_version` defines the version of the `p4` binary that will be downloaded and cached.  `p4_version` should only be specified in a `setup` GitHub Action Step. In this step the it will check if the specified version is already present, if it is not it will be loaded, cached, and added to the `$PATH`.  All subsequent steps will be able to use the `p4` found in the `$PATH`.
 
-See our [CI workflows](https://github.com/perforce/github-actions-p4/tree/master/.github/workflows) for examples.
+See our [CI workflows](https://github.com/perforce/setup-p4/tree/master/.github/workflows) for examples.
 
 #### `setup`
 
@@ -175,7 +190,7 @@ The [P4 CLI can utilize environment variables](https://www.perforce.com/manuals/
 
 ```yaml
 - name: p4 sync
-  uses: perforce/p4-github-actions@master
+  uses: perforce/setup-p4@master
   env:
   	P4CLIENT: sdp-dev-pipeline
   with:
@@ -191,7 +206,7 @@ All p4 commands will require valid authentication to your Helix Core server.  Mo
 
 ```yaml
 - name: p4 login
-  uses: perforce/p4-github-actions@master
+  uses: perforce/setup-p4@master
   with:
     command: login
     global_options: '-p helixcore.example.com:1666 -u andy'
@@ -223,10 +238,10 @@ exit_code will be set to the exit code of the p4 command
 
 The following is an example of how to use each of the outputs from this action:
 
-```
+```yaml
 - name: p4 depots
   id: depots
-  uses: perforce/p4-github-actions@master
+  uses: perforce/setup-p4@master
   with:
     command: depots
 
@@ -286,15 +301,41 @@ To enable debug logging, create a GitHub Repository Secret named `ACTIONS_STEP_D
 
 ### Network Connectivity
 
-GitHub Hosted Actions run in Azure so the list of [Azure IPv4 addresses](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#ip-addresses) must be able to reach your Helix Core instance.  
+GitHub Hosted Actions run in Azure so the list of [Azure IPv4 addresses](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#ip-addresses) must be able to reach your Helix Core instance.  To test if your Helix Core server is reachable from GitHub Hosted Actions create a workflow with the following content and run it:
+
+```bash
+on:
+  workflow_dispatch:
+
+name: Network Connectivity Test
+
+jobs:
+
+  network:
+    runs-on: ubuntu-latest
+    steps:
+    - run: nc -vz ${your helix core public IP} 1666
+``` 
+
+If your Helix Core server is reachable you will see output like the following:
+
+```
+Run nc -vz public.perforce.com 1666
+Connection to public.perforce.com 1666 port [tcp/*] succeeded!
+```
+
+and if it is not reachable you will get an error like the following:
+
+```
+Run nc -vz public.perforce.com 1666
+nc: connect to public.perforce.com port 1666 (tcp) failed: Connection timed out
+Error: Process completed with exit code 1.
+```
+
 
 ### Available Disk Space
 
 GitHub Hosted Actions provide ~30GB of disk space to your workflow.  Depending on your P4 Client Depot mapping you may run out of disk space.  Your options are to update your Depot mapping to reduce what data is pulled down or switching to [Self Hosted GitHub Actions](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners). 
-
-### p4 Binary
-
-[GitHub Actions virtual environment](https://github.com/actions/virtual-environments) does not have the p4 binary and Perforce does not have an official p4 cli Docker Image.  This means the p4 binary must be downloaded at the start of each workflow execution. 
 
 
 ### Build Tool Availability in GitHub Actions
@@ -304,15 +345,15 @@ If I am a pipeline developer using GitHb Actions I don't have many (any?) option
 
 ## Author Information
 
-This module is maintained by the contributors listed on [GitHub](https://github.com/perforce/p4-github-actions/graphs/contributors).
+This module is maintained by the contributors listed on [GitHub](https://github.com/perforce/setup-p4/graphs/contributors).
 
 Development of this module is sponsored by [Perforce](https://perforce.com).
 
 ## Support
 
-[![Support](https://img.shields.io/badge/Support-Community-yellow.svg)]
+![Support](https://img.shields.io/badge/Support-Community-yellow.svg)
 
-github-actions-p4 is a community supported project and is not officially supported by Perforce
+setup-p4 is a community supported project and is not officially supported by Perforce.
 Pull requests and issues are the responsibility of the project's moderator(s); this may be a vetted individual or team with members outside of the Perforce organization.
 Perforce does not officially support these projects, therefore all issues should be reported and managed via GitHub (not via Perforce's standard support process).
 
@@ -325,22 +366,22 @@ See the CODE_OF_CONDUCT.md file
 See the LICENSE file
 
 
-
 ## Contributor's Guide
 
 Here are the steps for contributing:
 
 1) fork the project
-2) 2) clone your fork to your workstation
+2) clone your fork to your workstation
 3) run `npm install` to install all the dependencies
 4) run `npm run package` to package the action
 5) create a `.actrc` and `act.secrets` file for testing locally (examples below)
-6) run `act`
+6) run `act --job unit` and `act --job smoke`
 7) commit changes and submit PR
 
 ### act
 
 [act](https://github.com/nektos/act) can be used to test GitHub Actions locally before having to commit any code. 
+
 
 #### .actrc
 

@@ -1,5 +1,5 @@
 {
-  "name": "github-actions-p4",
+  "name": "setup-p4",
   "version": "0.1.0",
   "description": "Download p4 and run p4 commands within GitHub Actions",
   "main": "dist/index.js",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/perforce/github-actions-p4.git"
+    "url": "git+https://github.com/perforce/setup-p4.git"
   },
   "keywords": [
     "GitHub",
@@ -21,12 +21,12 @@
     "Helix Core",
     "p4"
   ],
-  "author": "Andy Boutte",
+  "author": "Perforce Software",
   "license": "See LICENSE file",
   "bugs": {
-    "url": "https://github.com/perforce/github-actions-p4/issues"
+    "url": "https://github.com/perforce/setup-p4/issues"
   },
-  "homepage": "https://github.com/perforce/github-actions-p4",
+  "homepage": "https://github.com/perforce/setup-p4",
   "dependencies": {
     "@actions/core": "^1.6.0",
     "@actions/tool-cache": "^1.7.1",    

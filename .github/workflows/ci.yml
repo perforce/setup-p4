@@ -74,7 +74,7 @@ jobs:
           arguments: -i
 
           spec: |
-            Client:	github-actions-p4
+            Client:	github-actions-setup-p4
             Owner: ${{ secrets.P4USER }}
             Description:
               Created by ${{ secrets.P4USER }}.
@@ -83,13 +83,13 @@ jobs:
             SubmitOptions:	leaveunchanged
             LineEnd:	local
             View:
-              //guest/perforce_software/sdp/... //github-actions-p4/guest/perforce_software/sdp/...
+              //guest/perforce_software/sdp/... //github-actions-setup-p4/guest/perforce_software/sdp/...
 
       - name: p4 sync
         uses: ./
         id: sync
         env:
-          P4CLIENT: github-actions-p4
+          P4CLIENT: github-actions-setup-p4
         with:
           command: sync
           arguments: -f
