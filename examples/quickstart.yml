@@ -1,12 +1,16 @@
 on: [push]
 
 jobs:
-  internal:
+  quickstart:
     runs-on: ubuntu-latest
-    name: test private action
+    name: quickstart
+
+    # In GitHub Actions environment variables can be provided at the workflow level, job level, or step level. 
+    # See GitHub documentation for more details: https://docs.github.com/en/actions/learn-github-actions/environment-variables
     env:
-      P4PORT: ssl:helixcore.example.com:1666
-      P4USER: joe
+      P4PORT: ${{ secrets.P4PORT }}
+      P4USER: ${{ secrets.P4USER }}
+
     steps:
       # Checkout assets stored in GitHub
       - name: Checkout
@@ -14,15 +18,14 @@ jobs:
 
       # Install p4 cli and cache it if we are running within a self hosted runner
       - name: p4 setup
-        uses:
-        id: setup
+        uses: perforce/setup-p4@master
         with:
+          setup: true
           p4_version: 21.2
 
       # Authenticate to Helix Core using P4PASSWD GitHub Secret
       - name: p4 login
-        uses: perforce/p4-github-actions@master
-        id: login
+        uses: perforce/setup-p4@master
         with:
           command: login
         env:
@@ -30,29 +33,27 @@ jobs:
 
       # Create a workspace
       - name: p4 client
-        uses: ./
-        id: client
+        uses: perforce/setup-p4@master
         with:
           command: client
           arguments: -i
-
           spec: |
-            Client:	sdp-dev-pipeline
-            Owner:	andy
+            Client:	github-actions-setup-p4
+            Owner:	${{ secrets.P4USER }}
             Description:
-              Created by andy.
+              Created by ${{ secrets.P4USER }}.
             Root:	/tmp
             Options:	noallwrite noclobber nocompress unlocked modtime rmdir
             SubmitOptions:	leaveunchanged
             LineEnd:	local
             View:
-              //guest/perforce_software/sdp/... //sdp-dev-pipeline/guest/perforce_software/sdp/...
+              //projects/project_a/... //github-actions-setup-p4/projects/project_a/...
 
       # pull down assets from Helix Core
       - name: p4 sync
-        uses: perforce/p4-github-actions@master
-        id: sync
+        uses: perforce/setup-p4@master
         env:
-          P4CLIENT: sdp-dev-pipeline
+          P4CLIENT: github-actions-setup-p4
         with:
           command: sync
+

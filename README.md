@@ -1,7 +1,4 @@
-# :gear: `setup-p4` [![](https://github.com/perforce/setup-p4/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/perforce/setup-p4/actions/workflows/ci.yml)
-
-![license](https://img.shields.io/github/license/perforce/github-action-p4)
-[![GitHub tag](https://img.shields.io/github/tag/perforce/github-action-p4.svg)](https://github.com/perforce/github-action-p4/tags)
+# :gear: `setup-p4` [![](https://github.com/perforce/setup-p4/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/perforce/setup-p4/actions/workflows/ci.yml)  [![GitHub tag](https://img.shields.io/github/v/tag/perforce/setup-p4?sort=semver)](https://github.com/perforce/setup-p4/tags)
 
 > GitHub Action for running Perforce Helix Core P4 CLI [commands](https://www.perforce.com/manuals/cmdref/Content/CmdRef/commands.html).
 
@@ -17,42 +14,43 @@ In addition, the Action includes the following features:
 
 More features to come!
 
-- [:gear: `setup-p4` ![](https://github.com/perforce/setup-p4/actions/workflows/ci.yml)](#gear-setup-p4-)
-  - [Usage](#usage)
-    - [Inputs](#inputs)
-      - [`command`](#command)
-      - [`global_options`](#global_options)
-      - [`arguments`](#arguments)
-      - [`working_directory`](#working_directory)
-      - [`spec`](#spec)
-      - [`p4_version`](#p4_version)
-      - [`setup`](#setup)
-    - [Configuration](#configuration)
-      - [Environment Variables](#environment-variables)
-      - [Secrets](#secrets)
-    - [Outputs](#outputs)
-      - [stdout](#stdout)
-      - [stderr](#stderr)
-      - [exit_code](#exit_code)
-      - [Output Usage](#output-usage)
-  - [What This Action Does](#what-this-action-does)
-    - [p4 login](#p4-login)
-    - [`STDIN` required](#stdin-required)
-    - [Everything Else](#everything-else)
-  - [Detailed logs](#detailed-logs)
-  - [Limitations](#limitations)
-    - [Network Connectivity](#network-connectivity)
-    - [Available Disk Space](#available-disk-space)
-    - [p4 Binary](#p4-binary)
-    - [Build Tool Availability in GitHub Actions](#build-tool-availability-in-github-actions)
-  - [Author Information](#author-information)
-  - [Support](#support)
-  - [Code of Conduct](#code-of-conduct)
-  - [License](#license)
-  - [Contributor's Guide](#contributors-guide)
-    - [act](#act)
-      - [.actrc](#actrc)
-      - [my.secrets](#mysecrets)
+- [Usage](#usage)
+  - [Inputs](#inputs)
+    - [`command`](#command)
+    - [`global_options`](#global_options)
+    - [`arguments`](#arguments)
+    - [`working_directory`](#working_directory)
+    - [`spec`](#spec)
+    - [`p4_version`](#p4_version)
+    - [`setup`](#setup)
+  - [Configuration](#configuration)
+    - [Environment Variables](#environment-variables)
+    - [Secrets](#secrets)
+  - [Outputs](#outputs)
+    - [stdout](#stdout)
+    - [stderr](#stderr)
+    - [exit_code](#exit_code)
+    - [Output Usage](#output-usage)
+- [What This Action Does](#what-this-action-does)
+  - [p4 login](#p4-login)
+  - [`STDIN` required](#stdin-required)
+  - [Everything Else](#everything-else)
+- [Example GitHub Action Workflows](#example-github-action-workflows)
+- [Detailed logs](#detailed-logs)
+- [Limitations](#limitations)
+  - [Network Connectivity](#network-connectivity)
+  - [Available Disk Space](#available-disk-space)
+  - [Build Tool Availability in GitHub Actions](#build-tool-availability-in-github-actions)
+- [Author Information](#author-information)
+- [Support](#support)
+- [Code of Conduct](#code-of-conduct)
+- [License](#license)
+- [Contributor's Guide](#contributors-guide)
+  - [Issues](#issues)
+  - [Discussions](#discussions)
+  - [act](#act)
+    - [.actrc](#actrc)
+    - [my.secrets](#mysecrets)
 
 ## Usage
 
@@ -248,9 +246,9 @@ The following is an example of how to use each of the outputs from this action:
 - name: echo outputs from previous step
   run: |
     echo "this will print the outputs from the depots command in the previous step"
-    echo "${{ steps.depots.outputs.stdout }}      
-    echo "${{ steps.depots.outputs.stderr }}      
-    echo "${{ steps.depots.outputs.exit_code }} 
+    echo "stdout was: ${{ steps.depots.outputs.stdout }}"   
+    echo "stderr was: ${{ steps.depots.outputs.stderr }}"
+    echo "exit code was: ${{ steps.depots.outputs.exit_code }}"
 ```
 
 ## What This Action Does
@@ -291,6 +289,16 @@ echo "${INPUT_SPEC}" | ${COMMAND}
 ```bash
 ${COMMAND}
 ```
+
+## Example GitHub Action Workflows
+
+You can find some example workflows that use `setup-p4` in the examples directory.  
+
+| Name                | Description                                                  | 
+| ------------------- | ------------------------------------------------------------ | 
+| Quickstart          | Basic example that performs a p4 login, creates a workspaces, and sync files down from Helix Core.                                    | 
+| Setup Only          | This example performs the same steps as the Quickstart example but does not utilize any of the Action helper inputs |
+| Action Outputs      | Echos the stdout, stderr, and exit code                   | 
 
 ## Detailed logs
 
@@ -353,9 +361,7 @@ Development of this module is sponsored by [Perforce](https://perforce.com).
 
 ![Support](https://img.shields.io/badge/Support-Community-yellow.svg)
 
-setup-p4 is a community supported project and is not officially supported by Perforce.
-Pull requests and issues are the responsibility of the project's moderator(s); this may be a vetted individual or team with members outside of the Perforce organization.
-Perforce does not officially support these projects, therefore all issues should be reported and managed via GitHub (not via Perforce's standard support process).
+setup-p4 is a community supported project. Pull requests and issues are the responsibility of the project's moderator(s); this may be a vetted individual or team with members outside of the Perforce organization. All issues should be reported and managed via GitHub (not via Perforce's standard support process).
 
 ## Code of Conduct
 
@@ -367,6 +373,14 @@ See the LICENSE file
 
 
 ## Contributor's Guide
+
+### Issues
+
+Please create an [issue](https://github.com/perforce/setup-p4/issues) for all bug reports
+
+### Discussions
+
+To discuss feature requests, use cases, or to ask general questions please start a [discussion](https://github.com/perforce/setup-p4/discussions). 
 
 Here are the steps for contributing:
 
