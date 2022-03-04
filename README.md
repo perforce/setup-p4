@@ -387,7 +387,7 @@ Here are the steps for contributing:
 1) fork the project
 2) clone your fork to your workstation
 3) run `npm install` to install all the dependencies
-4) run `npm run package` to package the action
+4) run `npm run build` to package the action
 5) create a `.actrc` and `act.secrets` file for testing locally (examples below)
 6) run `act --job unit` and `act --job smoke`
 7) commit changes and submit PR
