@@ -22,7 +22,8 @@ jobs:
         uses: actions/setup-node@v2
 
       - run: npm ci
-      - run: npm run build   
+      - run: npm run build
+      - run: cp LICENSE dist/
 
       # Compile dist/index.js and bundle with action.yml
       # Force push major and minor tags, e.g. v1, v1.0

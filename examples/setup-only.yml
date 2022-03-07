@@ -18,7 +18,7 @@ jobs:
 
       # Install p4 cli and cache it if we are running within a self hosted runner
       - name: p4 setup
-        uses: perforce/setup-p4@master
+        uses: perforce/setup-p4@v1
         with:
           setup: true
           p4_version: 21.2

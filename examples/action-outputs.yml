@@ -18,14 +18,14 @@ jobs:
 
       # Install p4 cli and cache it if we are running within a self hosted runner
       - name: p4 setup
-        uses: perforce/setup-p4@master
+        uses: perforce/setup-p4@v1
         with:
           setup: true
           p4_version: 21.2
 
       # Authenticate to Helix Core using P4PASSWD GitHub Secret
       - name: p4 login
-        uses: perforce/setup-p4@master
+        uses: perforce/setup-p4@v1
         with:
           command: login
         env:
@@ -33,7 +33,7 @@ jobs:
 
       # Create a workspace
       - name: p4 client
-        uses: perforce/setup-p4@master
+        uses: perforce/setup-p4@v1
         with:
           command: client
           arguments: -i
@@ -52,7 +52,7 @@ jobs:
       # pull down assets from Helix Core
       - name: p4 sync
         id: sync
-        uses: perforce/setup-p4@master
+        uses: perforce/setup-p4@v1
         env:
           P4CLIENT: github-actions-setup-p4
         with:
