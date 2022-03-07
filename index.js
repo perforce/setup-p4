@@ -151,7 +151,7 @@ try {
         );
       } catch (error) {
         core.setFailed(
-          `Failed to run command '${inputCommand}'with error: ${error.message}`
+          `Failed to run command '${inputCommand}' with error: ${error.message}`
         );
       }
     } else {
