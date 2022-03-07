@@ -4,7 +4,7 @@
   "description": "Download p4 and run p4 commands within GitHub Actions",
   "main": "dist/index.js",
   "scripts": {
-    "build": "npx @vercel/ncc build index.js -o dist && npx convert-action",
+    "build": "npx @vercel/ncc build index.js --license license.txt -o dist && npx convert-action",
     "test": "jest --",
     "coverage": "jest --collectCoverage --",
     "lint": "eslint index.js",

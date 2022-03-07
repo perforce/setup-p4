@@ -2,15 +2,8 @@
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 5411:
-/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
-__nccwpck_require__.r(__webpack_exports__);
-/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "mapOS": () => (/* binding */ mapOS),
-/* harmony export */   "p4semversion": () => (/* binding */ p4semversion),
-/* harmony export */   "run": () => (/* binding */ run)
-/* harmony export */ });
 const os = __nccwpck_require__(2037);
 const core = __nccwpck_require__(2186);
 const tc = __nccwpck_require__(7784);
@@ -97,7 +90,7 @@ async function run (version) {
   }
 }
 
-// module.exports = run;
+module.exports = { mapOS, p4semversion, run, perforceBuild };
 
 
 /***/ }),
@@ -13606,34 +13599,6 @@ module.exports = require("util");
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
 /******/ 		__nccwpck_require__.nmd = (module) => {
@@ -13736,6 +13701,11 @@ try {
             core.setOutput("exit_code", code);
             core.setOutput("stdout", stdout);
             core.setOutput("stderr", stderr);
+            if (code !== 0) {
+              core.setFailed(
+                `Failed to run command ${inputCommand} with error: ${stderr}`
+              );
+            }
           }
         );
       } catch (error) {
@@ -13752,6 +13722,11 @@ try {
             core.setOutput("exit_code", code);
             core.setOutput("stdout", stdout);
             core.setOutput("stderr", stderr);
+            if (code !== 0) {
+              core.setFailed(
+                `Failed to log into Helix Core with error: ${stderr}`
+              );
+            }
           }
         );
       } catch (error) {
@@ -13779,6 +13754,11 @@ try {
             core.setOutput("exit_code", code);
             core.setOutput("stdout", stdout);
             core.setOutput("stderr", stderr);
+            if (code !== 0) {
+              core.setFailed(
+                `Failed to run command '${inputCommand}' with error: ${stderr}`
+              );
+            }
           },
           {
             env: {
@@ -13789,7 +13769,7 @@ try {
         );
       } catch (error) {
         core.setFailed(
-          `Failed to run command ${inputCommand} with error: ${error.message}`
+          `Failed to run command '${inputCommand}' with error: ${error.message}`
         );
       }
     } else {
@@ -13798,10 +13778,15 @@ try {
           core.setOutput("exit_code", code);
           core.setOutput("stdout", stdout);
           core.setOutput("stderr", stderr);
+          if (code !== 0) {
+            core.setFailed(
+              `Failed to run command '${inputCommand}' with error: ${stderr}`
+            );
+          }
         });
       } catch (error) {
         core.setFailed(
-          `Failed to run command ${inputCommand} with error: ${error.message}`
+          `Failed to run command '${inputCommand}' with error: ${error.message}`
         );
       }
     }
@@ -13814,6 +13799,11 @@ try {
           core.setOutput("exit_code", code);
           core.setOutput("stdout", stdout);
           core.setOutput("stderr", stderr);
+          if (code !== 0) {
+            core.setFailed(
+              `Failed to run command '${inputCommand}' with error: ${stderr}`
+            );
+          }
         },
         {
           env: {
@@ -13823,7 +13813,7 @@ try {
       );
     } catch (error) {
       core.setFailed(
-        `Failed to run command ${inputCommand} with error: ${error.message}`
+        `Failed to run command '${inputCommand}' with error: ${error.message}`
       );
     }
   }
