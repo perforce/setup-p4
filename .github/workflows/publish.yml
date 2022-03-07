@@ -24,6 +24,9 @@ jobs:
       # Compile dist/index.js and bundle with action.yml
       # Force push major and minor tags, e.g. v1, v1.0
       # See documentation: https://github.com/JasonEtco/build-and-tag-action
-      - uses: JasonEtco/build-and-tag-action@v2
+      # https://github.com/actions/toolkit/blob/master/docs/action-versioning.md#versioning
+      - uses: aboutte/build-and-tag-action@v2.1
+        with:
+          additional_files: 'license.txt'
         env:
           GITHUB_TOKEN: ${{ github.token }}
