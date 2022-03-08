@@ -2,19 +2,22 @@
 
 > GitHub Action for running Perforce Helix Core P4 CLI [commands](https://www.perforce.com/manuals/cmdref/Content/CmdRef/commands.html).
 
-This GitHub Action downloads, installs and configures Perforce Helix Core P4 CLI, so that it can be used as part of the workflow.
+
+
+The `perforce/setup-p4` action is a JavaScript Action that sets up Perforce Helix Core P4 CLI in your GitHub Actions workflow by downloading a specific version of Perforce Helix Core CLI and adding it to the `PATH`.
 
 In addition, the Action includes the following features:
 
-- This Action supports all GitHub Hosted Runner Operating Systems
+- This Action supports all GitHub Hosted and Self-Hosted Runner Operating Systems
 - Defaults to latest version of P4 CLI but can be overwritten 
 - All P4 CLI commands can be run from the Action
-- Uses GitHub Action Inputs for P4 CLI commands, arguments, and global options
-- The connection details of the Perforce Helix Core servers used by P4 CLI can be stored as secrets. 
+- Optionally use GitHub Action Inputs to ease setting up your P4 CLI commands
+- The connection details of the Perforce Helix Core servers used by P4 CLI can be stored as secrets
 
 More features to come!
 
 - [Usage](#usage)
+  - [Quickstart](#quickstart)
   - [Inputs](#inputs)
     - [`command`](#command)
     - [`global_options`](#global_options)
@@ -27,20 +30,17 @@ More features to come!
     - [Environment Variables](#environment-variables)
     - [Secrets](#secrets)
   - [Outputs](#outputs)
-    - [stdout](#stdout)
-    - [stderr](#stderr)
-    - [exit_code](#exit_code)
     - [Output Usage](#output-usage)
-- [What This Action Does](#what-this-action-does)
-  - [p4 login](#p4-login)
-  - [`STDIN` required](#stdin-required)
-  - [Everything Else](#everything-else)
+  - [Versioning](#versioning)
+  - [What This Action Does](#what-this-action-does)
+    - [p4 login](#p4-login)
+    - [`STDIN` required](#stdin-required)
+    - [Everything Else](#everything-else)
 - [Example GitHub Action Workflows](#example-github-action-workflows)
 - [Detailed logs](#detailed-logs)
 - [Limitations](#limitations)
   - [Network Connectivity](#network-connectivity)
   - [Available Disk Space](#available-disk-space)
-  - [Build Tool Availability in GitHub Actions](#build-tool-availability-in-github-actions)
 - [Author Information](#author-information)
 - [Support](#support)
 - [Code of Conduct](#code-of-conduct)
@@ -54,83 +54,67 @@ More features to come!
 
 ## Usage
 
+### Quickstart
+
 Add the Action to your [GitHub Workflow](https://docs.github.com/en/actions/learn-github-actions#creating-a-workflow-file) like so:
 
-```yaml
----
 
-on: [push]
 
-jobs:
-  internal:
-    runs-on: ubuntu-latest
-    name: test private action
-    env:
-      P4PORT: ssl:helixcore.example.com:1666
-      P4USER: joe
-    steps:
-      # Checkout assets stored in GitHub
-      - name: Checkout
-        uses: actions/checkout@v2
+This will download, install, and add the P4 CLI into the `PATH`:
 
-      # Install p4 cli and cache it if we are running within a self hosted runner
-      - name: p4 setup
-        uses:
-        id: setup
-        with:
-          setup: true
-          p4_version: 21.2
-
-      # Authenticate to Helix Core using P4PASSWD GitHub Secret
-      - name: p4 login
-        uses: perforce/setup-p4@master
-        id: login
-        with:
-          command: login
-        env:
-          P4PASSWD: ${{ secrets.P4PASSWD }}
-
-      # Create a workspace
-      - name: p4 client
-        uses: ./
-        id: client
-        with:
-          command: client
-          arguments: -i
-
-          spec: |
-            Client:	sdp-dev-pipeline
-            Owner:	andy
-            Description:
-              Created by andy.
-            Root:	/tmp
-            Options:	noallwrite noclobber nocompress unlocked modtime rmdir
-            SubmitOptions:	leaveunchanged
-            LineEnd:	local
-            View:
-              //guest/perforce_software/sdp/... //sdp-dev-pipeline/guest/perforce_software/sdp/...
-
-      # pull down assets from Helix Core
-      - name: p4 sync
-        uses: perforce/setup-p4@master
-        id: sync
-        env:
-          P4CLIENT: sdp-dev-pipeline
-        with:
-          command: sync
+```      # Install p4 cli
+steps:
+  - uses: perforce/setup-p4@v1
+    with:
+      p4_version: 21.2
 ```
+
+
+
+This will perform a `p4 login` utilizng a GitHub Secret for the password:
+
+```      # Authenticate to Helix Core using P4PASSWD GitHub Secret
+steps:
+	- uses: perforce/setup-p4@v1
+		with:
+			command: login
+    env:
+			P4PASSWD: ${{ secrets.P4PASSWD }}
+```
+
+
+
+This will run `p4 depots`
+
+```steps:
+steps:
+	- uses: perforce/setup-p4@v1
+		with:
+			command: depots
+```
+
+
+
+Review the [quickstart.yml](examples/quickstart.yml) for an example workflow that:
+
+- install p4 CLI
+- logs into Helix Core
+- creates a workspace (client)
+- pulls down assets from Helix Core
+
+
 
 ### Inputs
 
 | Name                | Description                                                  | Required | Default |
 | ------------------- | ------------------------------------------------------------ | -------- | ------- |
-| `command`           | p4 cli command to execute                                    | yes      |         |
-| `global_options`    | p4 cli arguments that are supplied on the command line before the command | no       |         |
-| `arguments`         | arguments that are p4 cli command specific                   | no       |         |
-| `working_directory` | directory to change into before running p4 command           | no       |         |
+| `command`           | p4 CLI command to execute                                  | yes      |         |
+| `global_options`    | p4 CLI arguments that are supplied on the command line before the `command` | no       |         |
+| `arguments`         | arguments that are p4 CLI `command` specific               | no       |         |
+| `working_directory` | directory to change into before running p4 `command`         | no       |         |
 | `spec`              | spec content that is fed into p4 stdin to create/update resources | no       |         |
 | `p4_version`        | version of p4 binary to download and cache | no       |  21.2       |
-| `setup`        | used to trigger the setup routine that installs p4 | no       |  false       |
+| `setup`        | used to trigger the setup routine that installs the p4 CLI | no       |  false       |
 
 
 
@@ -151,7 +135,7 @@ Common `global_options` you may want to set would include
 
 #### `arguments`
 
-`arguments `supports all P4 Command arguments.  To find available arguments first find the [command documentation](https://www.perforce.com/manuals/cmdref/Content/CmdRef/commands.html) and then look under the Options section. 
+`arguments ` supports all P4 Command arguments.  To find available arguments first find the [command documentation](https://www.perforce.com/manuals/cmdref/Content/CmdRef/commands.html) and then look under the Options section. 
 
 
 #### `working_directory`
@@ -171,7 +155,7 @@ See our [CI workflows](https://github.com/perforce/setup-p4/tree/master/.github/
 
 #### `setup`
 
-`setup` is used to trigger the download, installation, and caching of the p4 binary.  
+`setup` is used to trigger the download, installation, and caching of the p4 CLI.  
 
 
 
@@ -188,7 +172,7 @@ The [P4 CLI can utilize environment variables](https://www.perforce.com/manuals/
 
 ```yaml
 - name: p4 sync
-  uses: perforce/setup-p4@master
+  uses: perforce/setup-p4@v1
   env:
   	P4CLIENT: sdp-dev-pipeline
   with:
@@ -204,7 +188,7 @@ All p4 commands will require valid authentication to your Helix Core server.  Mo
 
 ```yaml
 - name: p4 login
-  uses: perforce/setup-p4@master
+  uses: perforce/setup-p4@v1
   with:
     command: login
     global_options: '-p helixcore.example.com:1666 -u andy'
@@ -218,19 +202,13 @@ You can name your GitHub Repository Secret anything you would like but the Actio
 
 ### Outputs
 
-This action creates three outputs for all p4 commands: stdout, stderr, and exit_code.
+When using the provided helpers this action creates three outputs for all p4 commands: stdout, stderr, and exit_code.  The following outputs are available for subsequent steps:
 
-#### stdout
+- `stdout` - The STDOUT stream of the call to the `p4` binary.
+- `stderr` - The STDERR stream of the call to the `p4` binary.
+- `exit_code` - The exit code of the call to the `p4` binary.
 
-stderr will contain any standard output from the p4 command
 
-#### stderr
-
-stderr will contain any standard error output from the p4 command
-
-#### exit_code
-
-exit_code will be set to the exit code of the p4 command
 
 #### Output Usage
 
@@ -239,7 +217,7 @@ The following is an example of how to use each of the outputs from this action:
 ```yaml
 - name: p4 depots
   id: depots
-  uses: perforce/setup-p4@master
+  uses: perforce/setup-p4@v1
   with:
     command: depots
 
@@ -251,7 +229,43 @@ The following is an example of how to use each of the outputs from this action:
     echo "exit code was: ${{ steps.depots.outputs.exit_code }}"
 ```
 
-## What This Action Does
+
+
+### Versioning
+
+We recommend pinning to the latest available major version:
+
+```
+- uses: perforce/setup-p4@v1
+```
+
+This action follows semantic versioning, but we're human and sometimes make mistakes. To prevent accidental breaking changes, you can also pin to a specific version:
+
+```
+- uses: perforce/setup-p4@v1.0.1
+```
+
+However, you will not get automatic security updates or new features without explicitly updating your version number. 
+
+
+
+### Helpers
+
+
+
+After running the setup routine, subsequent steps in the same job can run arbitrary P4 CLI commands using [the GitHub Actions `run` syntax](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstepsrun). This allows most P4 CLI commands to work exactly like they do on your local command line.  Take a look at [setup-only.yml](examples/setup-only.yml) for an example of what this looks like.
+
+Alternativly to running P4 CLI commands using the GitHub ACtions `run` syntax you can use helpers that are provided by the `setup-p4` action. 
+
+
+
+Benefits to using the helpers:
+
+- you don't have to worry about passing complex `spec` as `stdin` to the p4 command ([example](https://github.com/perforce/setup-p4/blob/master/examples/setup-only.yml#L44))
+- `stdout`, `stderr`, and `exit_code` are captured for you and stored as GitHub Outputs
+- Bad p4 commands, bad p4 arguments, bad p4 spec, and [pipefail](https://coderwall.com/p/fkfaqq/safer-bash-scripts-with-set-euxo-pipefail) errors are all caught and will fail the GitHub Step to prevent false positives in your pipelines
+
+
 
 
 1) Installs the p4 CLI
@@ -263,11 +277,12 @@ The following is an example of how to use each of the outputs from this action:
 This is how the command gets built up:
 
 ```bash
-COMMAND="p4 $INPUT_GLOBAL_OPTIONS $INPUT_COMMAND $INPUT_ARGUMENTS"
+COMMAND="p4 $GLOBAL_OPTIONS $COMMAND $ARGUMENTS"
 ```
 
 
-### p4 login
+
+#### p4 login
 
 The `p4 login` command will read the user password from STDIN so `$P4PASSWD` gets echoed into `$COMMAND`.
 
@@ -276,19 +291,25 @@ The `p4 login` command will read the user password from STDIN so `$P4PASSWD` get
 echo "${P4PASSWD}" | ${COMMAND}
 ```
 
-### `STDIN` required
+
+
+#### `STDIN` required
 
 This command format is used whenever a p4 resource must be created or updated.  The contents of your `spec` are passed to STDIN of p4 command.
 
 ```bash
-echo "${INPUT_SPEC}" | ${COMMAND}
+echo "${SPEC}" | ${COMMAND}
 ```
 
-### Everything Else
+
+
+#### Everything Else
 
 ```bash
 ${COMMAND}
 ```
+
+
 
 ## Example GitHub Action Workflows
 
@@ -299,6 +320,11 @@ You can find some example workflows that use `setup-p4` in the examples director
 | Quickstart          | Basic example that performs a p4 login, creates a workspaces, and sync files down from Helix Core.                                    | 
 | Setup Only          | This example performs the same steps as the Quickstart example but does not utilize any of the Action helper inputs |
 | Action Outputs      | Echos the stdout, stderr, and exit code                   | 
+
+Additionally here are example projects that use `setup-p4`
+
+- [setup-p4-example-build-template](https://github.com/perforce/setup-p4-example-build-template) - An example workflow that syncs content from Helix Core and publishes it to GitHub Pages.
+- More to come!
 
 ## Detailed logs
 
@@ -323,7 +349,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - run: nc -vz ${your helix core public IP} 1666
-``` 
+```
 
 If your Helix Core server is reachable you will see output like the following:
 
@@ -341,14 +367,12 @@ Error: Process completed with exit code 1.
 ```
 
 
+
 ### Available Disk Space
 
 GitHub Hosted Actions provide ~30GB of disk space to your workflow.  Depending on your P4 Client Depot mapping you may run out of disk space.  Your options are to update your Depot mapping to reduce what data is pulled down or switching to [Self Hosted GitHub Actions](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners). 
 
 
-### Build Tool Availability in GitHub Actions
-
-If I am a pipeline developer using GitHb Actions I don't have many (any?) options for getting my build tool (unreal engine, unity, etc) into GitHub Actions.  My option is to create a build server and use Self Hosted GitHub Actions.
 
 
 ## Author Information
@@ -357,36 +381,49 @@ This module is maintained by the contributors listed on [GitHub](https://github.
 
 Development of this module is sponsored by [Perforce](https://perforce.com).
 
+
+
 ## Support
 
 ![Support](https://img.shields.io/badge/Support-Community-yellow.svg)
 
 setup-p4 is a community supported project. Pull requests and issues are the responsibility of the project's moderator(s); this may be a vetted individual or team with members outside of the Perforce organization. All issues should be reported and managed via GitHub (not via Perforce's standard support process).
 
+
+
 ## Code of Conduct
 
-See the CODE_OF_CONDUCT.md file
+See [CODE_OF_CONDUCT.md](/CODE_OF_CONDUCT.md)
+
+
 
 ## License
 
-See the LICENSE file
+See [LICENSE](/LICENSE)
+
 
 
 ## Contributor's Guide
 
+
+
 ### Issues
 
-Please create an [issue](https://github.com/perforce/setup-p4/issues) for all bug reports
+Please create an [issue](https://github.com/perforce/setup-p4/issues) for all bug or security vulnerability reports.
+
+
 
 ### Discussions
 
 To discuss feature requests, use cases, or to ask general questions please start a [discussion](https://github.com/perforce/setup-p4/discussions). 
 
+
+
 Here are the steps for contributing:
 
 1) fork the project
 2) clone your fork to your workstation
-3) run `npm install` to install all the dependencies
+3) run `npm ci` to install all the dependencies
 4) run `npm run build` to package the action
 5) create a `.actrc` and `act.secrets` file for testing locally (examples below)
 6) run `act --job unit` and `act --job smoke`
