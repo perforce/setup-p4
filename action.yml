@@ -15,17 +15,15 @@ inputs:
     description: This is the P4 spec contents for the resource you are creating
     required: false
   p4_version:
-    description: Version of P4 binary to use
+    description: >-
+      Version of P4 binary to use.  When a step has this set it will download
+      and install the P4 CLI.
     required: false
     default: 21.2
   working_directory:
     description: The working directory to use when running p4 commands.
     required: false
     default: .
-  setup:
-    description: 'The setup routine is used to download, install, and cache the `p4_version`'
-    required: false
-    default: false
 outputs:
   stdout:
     description: Standard output from the p4 command

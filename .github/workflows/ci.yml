@@ -24,16 +24,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: p4 setup
+      - name: p4 info 21.1
         uses: ./
-        id: setup
         with:
-          setup: true
-          p4_version: 21.2
+          p4_version: 21.1
+          command: -V
 
-      - name: p4 info
+      - name: p4 info 21.2
         uses: ./
         with:
+          p4_version: 21.2
+          command: -V
+
+      - name: p4 info 21.2
+        uses: ./
+        with:
+          p4_version: 21.2
           command: -V
 
   integration:
@@ -55,7 +61,6 @@ jobs:
         uses: ./
         id: setup
         with:
-          setup: true
           p4_version: 21.2
 
       - name: p4 login
