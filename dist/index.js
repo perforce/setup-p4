@@ -13575,6 +13575,13 @@ const command = `p4 ${globalOptions} ${inputCommand} ${args}`;
 const platform = os.platform();
 const cwd = core.getInput("working_directory");
 
+// To allow using environment variables in working_directory drop down 
+// to the shell to expand the environment variables. 
+// trim off any leading or trailing whitespace 
+const expanded_cwd = exec(`echo "${cwd}"`)
+  .trim()
+  .replace(/['"]+/g, '');
+
 core.debug(`p4 version is: ${p4Version}`);
 core.debug(`p4 semantic version is: ${setup.p4SemVersion(p4Version)}`);
 core.debug(`input command is: ${inputCommand}`);
@@ -13583,8 +13590,7 @@ core.debug(`arguments is: ${args}`);
 core.debug(`command is: ${command}`);
 core.debug(`spec is: ${spec}`);
 core.debug(`working directory is set to: ${cwd}`);
-
-process.chdir(cwd);
+core.debug(`expanded working directory is set to: ${expanded_cwd}`);
 
 async function setupP4(callback) {
   let toolPath = "";
@@ -13654,6 +13660,15 @@ function main() {
   config.fatal = true;
 
   try {
+
+    if (fs.existsSync(expanded_cwd)) {
+      process.chdir(expanded_cwd);
+    } else {
+      core.setFailed(
+        `'working_directory' set to ${expanded_cwd}, which is a nonexistent directory. `
+      );
+    }
+
     if (inputCommand == "login") {
       core.debug("Login command found.");
 
