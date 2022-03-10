@@ -9,11 +9,10 @@ const setup = require("./lib/setup");
 
 const inputCommand = core.getInput("command");
 const globalOptions = core.getInput("global_options");
-/* eslint-disable no-shadow-restricted-names */
-const arguments = core.getInput("arguments");
+const args = core.getInput("arguments");
 const spec = core.getInput("spec");
 const p4Version = core.getInput("p4_version");
-const command = `p4 ${globalOptions} ${inputCommand} ${arguments}`;
+const command = `p4 ${globalOptions} ${inputCommand} ${args}`;
 const platform = os.platform();
 const cwd = core.getInput("working_directory");
 
@@ -21,7 +20,7 @@ core.debug(`p4 version is: ${p4Version}`);
 core.debug(`p4 semantic version is: ${setup.p4SemVersion(p4Version)}`);
 core.debug(`input command is: ${inputCommand}`);
 core.debug(`global options is: ${globalOptions}`);
-core.debug(`arguments is: ${arguments}`);
+core.debug(`arguments is: ${args}`);
 core.debug(`command is: ${command}`);
 core.debug(`spec is: ${spec}`);
 core.debug(`working directory is set to: ${cwd}`);
@@ -95,73 +94,121 @@ function main() {
   /* eslint-disable no-undef */
   config.fatal = true;
 
-  if (inputCommand == "login") {
-    core.debug("Login command found.");
+  try {
+    if (inputCommand == "login") {
+      core.debug("Login command found.");
 
-    if (spec) {
-      core.setFailed(
-        "Login command found but `spec` is also set.  Please remove `spec` contents."
-      );
-    }
+      if (spec) {
+        core.setFailed(
+          "Login command found but `spec` is also set.  Please remove `spec` contents."
+        );
+      }
 
-    if (setup.mapOS(platform) == "windows") {
-      core.debug("Running OS is windows.");
-      try {
-        exec(
-          `echo | set /p="${process.env.P4PASSWD}" | p4 login`,
-          function (code, stdout, stderr) {
+      if (setup.mapOS(platform) == "windows") {
+        core.debug("Running OS is windows.");
+        try {
+          exec(
+            `echo | set /p="${process.env.P4PASSWD}" | p4 login`,
+            function (code, stdout, stderr) {
+              core.setOutput("exit_code", code);
+              core.setOutput("stdout", stdout);
+              core.setOutput("stderr", stderr);
+              if (code !== 0) {
+                core.setFailed(
+                  `Failed to run command ${inputCommand} with error: ${stderr}`
+                );
+              }
+            }
+          );
+        } catch (error) {
+          core.setFailed(
+            `Failed to log into Helix Core with error: ${error.message}`
+          );
+        }
+      } else {
+        core.debug("Running OS is linux.");
+        try {
+          exec(
+            `echo "${process.env.P4PASSWD}" | p4 login`,
+            function (code, stdout, stderr) {
+              core.setOutput("exit_code", code);
+              core.setOutput("stdout", stdout);
+              core.setOutput("stderr", stderr);
+              if (code !== 0) {
+                core.setFailed(
+                  `Failed to log into Helix Core with error: ${stderr}`
+                );
+              }
+            }
+          );
+        } catch (error) {
+          core.setFailed(
+            `Failed to log into Helix Core with error: ${error.message}`
+          );
+        }
+      }
+    } else if (spec) {
+      if (args.includes("-i")) {
+        core.debug("`arguments` includes -i which is required");
+      } else {
+        // TODO: once project name is set and public add URL to example in this message
+        core.setFailed(
+          "spec being used but `arguments` does not included `-i`"
+        );
+      }
+
+      core.debug("Spec is set so pass it in as stdin");
+
+      if (setup.mapOS(platform) == "windows") {
+        process.env["SPECENV"] = spec;
+        try {
+          exec(
+            `powershell.exe -Command echo $env:SPECENV | ${command}`,
+            function (code, stdout, stderr) {
+              core.setOutput("exit_code", code);
+              core.setOutput("stdout", stdout);
+              core.setOutput("stderr", stderr);
+              if (code !== 0) {
+                core.setFailed(
+                  `Failed to run command '${inputCommand}' with error: ${stderr}`
+                );
+              }
+            },
+            {
+              env: {
+                ...process.env,
+                ...process.env["SPECENV"],
+              },
+            }
+          );
+        } catch (error) {
+          core.setFailed(
+            `Failed to run command '${inputCommand}' with error: ${error.message}`
+          );
+        }
+      } else {
+        try {
+          exec(`echo "${spec}" | ${command}`, function (code, stdout, stderr) {
             core.setOutput("exit_code", code);
             core.setOutput("stdout", stdout);
             core.setOutput("stderr", stderr);
             if (code !== 0) {
               core.setFailed(
-                `Failed to run command ${inputCommand} with error: ${stderr}`
+                `Failed to run command '${inputCommand}' with error: ${stderr}`
               );
             }
-          }
-        );
-      } catch (error) {
-        core.setFailed(
-          `Failed to log into Helix Core with error: ${error.message}`
-        );
+          });
+        } catch (error) {
+          core.setFailed(
+            `Failed to run command '${inputCommand}' with error: ${error.message}`
+          );
+        }
       }
     } else {
-      core.debug("Running OS is linux.");
+      core.debug("Standard p4 command with nothing from stdin");
       try {
         exec(
-          `echo "${process.env.P4PASSWD}" | p4 login`,
-          function (code, stdout, stderr) {
-            core.setOutput("exit_code", code);
-            core.setOutput("stdout", stdout);
-            core.setOutput("stderr", stderr);
-            if (code !== 0) {
-              core.setFailed(
-                `Failed to log into Helix Core with error: ${stderr}`
-              );
-            }
-          }
-        );
-      } catch (error) {
-        core.setFailed(
-          `Failed to log into Helix Core with error: ${error.message}`
-        );
-      }
-    }
-  } else if (spec) {
-    if (arguments.includes("-i")) {
-      core.debug("`arguments` includes -i which is required");
-    } else {
-      // TODO: once project name is set and public add URL to example in this message
-      core.setFailed("spec being used but `arguments` does not included `-i`");
-    }
-
-    core.debug("Spec is set so pass it in as stdin");
-
-    if (setup.mapOS(platform) == "windows") {
-      process.env["SPECENV"] = spec;
-      try {
-        exec(
-          `powershell.exe -Command echo $env:SPECENV | ${command}`,
+          command,
           function (code, stdout, stderr) {
             core.setOutput("exit_code", code);
             core.setOutput("stdout", stdout);
@@ -175,7 +222,6 @@ function main() {
           {
             env: {
               ...process.env,
-              ...process.env["SPECENV"],
             },
           }
         );
@@ -184,50 +230,11 @@ function main() {
           `Failed to run command '${inputCommand}' with error: ${error.message}`
         );
       }
-    } else {
-      try {
-        exec(`echo "${spec}" | ${command}`, function (code, stdout, stderr) {
-          core.setOutput("exit_code", code);
-          core.setOutput("stdout", stdout);
-          core.setOutput("stderr", stderr);
-          if (code !== 0) {
-            core.setFailed(
-              `Failed to run command '${inputCommand}' with error: ${stderr}`
-            );
-          }
-        });
-      } catch (error) {
-        core.setFailed(
-          `Failed to run command '${inputCommand}' with error: ${error.message}`
-        );
-      }
     }
-  } else {
-    core.debug("Standard p4 command with nothing from stdin");
-    try {
-      exec(
-        command,
-        function (code, stdout, stderr) {
-          core.setOutput("exit_code", code);
-          core.setOutput("stdout", stdout);
-          core.setOutput("stderr", stderr);
-          if (code !== 0) {
-            core.setFailed(
-              `Failed to run command '${inputCommand}' with error: ${stderr}`
-            );
-          }
-        },
-        {
-          env: {
-            ...process.env,
-          },
-        }
-      );
-    } catch (error) {
-      core.setFailed(
-        `Failed to run command '${inputCommand}' with error: ${error.message}`
-      );
-    }
+  } catch (error) {
+    core.setFailed(
+      `Something bad happened in main.  Error was: ${error.message}`
+    );
   }
 }
 
