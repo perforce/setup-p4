@@ -444,7 +444,8 @@ Here are the steps for contributing:
 3) run `npm ci` to install all the dependencies
 4) run `npm run build` to package the action
 5) create a `.actrc` and `act.secrets` file for testing locally (examples below)
-6) run `act --job unit` and `act --job smoke`
+6) run `act --job unit` , `act --job smoke`, and `act --job integration` before submitting a PR
+   1) Note that the integration tests will require a running Helix Core
 7) commit changes and submit PR
 
 ### act
