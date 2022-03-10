@@ -20,7 +20,6 @@ jobs:
       - name: p4 setup
         uses: perforce/setup-p4@v1
         with:
-          setup: true
           p4_version: 21.2
 
       - run: |

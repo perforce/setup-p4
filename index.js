@@ -2,32 +2,92 @@ const core = require("@actions/core");
 const tc = require("@actions/tool-cache");
 require("shelljs/global");
 const os = require("os");
-const setup = require("./lib/setup-p4");
+const { v4: uuidv4 } = require("uuid");
+const fs = require("fs");
+const path = require("path");
+const setup = require("./lib/setup");
 
-try {
-  const inputCommand = core.getInput("command");
-  const globalOptions = core.getInput("global_options");
-  /* eslint-disable no-shadow-restricted-names */
-  const arguments = core.getInput("arguments");
-  const spec = core.getInput("spec");
-  const p4Version = core.getInput("p4_version");
-  const command = `p4 ${globalOptions} ${inputCommand} ${arguments}`;
-  const platform = os.platform();
-  const p4SemVersion = setup.p4semversion(p4Version);
-  const cwd = core.getInput("working_directory");
+const inputCommand = core.getInput("command");
+const globalOptions = core.getInput("global_options");
+/* eslint-disable no-shadow-restricted-names */
+const arguments = core.getInput("arguments");
+const spec = core.getInput("spec");
+const p4Version = core.getInput("p4_version");
+const command = `p4 ${globalOptions} ${inputCommand} ${arguments}`;
+const platform = os.platform();
+const cwd = core.getInput("working_directory");
 
-  core.debug(`p4 semversion is: ${p4SemVersion}`);
-  core.debug(`input command is: ${inputCommand}`);
-  core.debug(`command is: ${command}`);
-  core.debug(`global options is: ${globalOptions}`);
-  core.debug(`arguments is: ${arguments}`);
-  core.debug(`spec is: ${spec}`);
-  core.debug(`p4 version is: ${p4Version}`);
-  core.debug(`working directory is set to: ${cwd}`);
-  core.debug(`setup input is: ${core.getInput("setup")}`);
+core.debug(`p4 version is: ${p4Version}`);
+core.debug(`p4 semantic version is: ${setup.p4SemVersion(p4Version)}`);
+core.debug(`input command is: ${inputCommand}`);
+core.debug(`global options is: ${globalOptions}`);
+core.debug(`arguments is: ${arguments}`);
+core.debug(`command is: ${command}`);
+core.debug(`spec is: ${spec}`);
+core.debug(`working directory is set to: ${cwd}`);
 
-  process.chdir(cwd);
+process.chdir(cwd);
 
+async function setupP4(callback) {
+  let toolPath = "";
+  toolPath = tc.find("p4", setup.p4SemVersion(p4Version));
+
+  if (toolPath) {
+    core.debug(`Found in cache @ ${toolPath}`);
+    const allVersions = tc.findAllVersions("p4");
+    core.debug(
+      `Found the following versions of p4 in the cache: ${allVersions}`
+    );
+    // since the version of the binary we need is found just add it to the PATH
+    core.addPath(toolPath);
+  } else {
+    const osPlatform = os.platform();
+    const platform = setup.mapOS(osPlatform);
+    const base_url = "https://cdist2.perforce.com/perforce";
+    const extension = platform === "windows" ? "zip" : "tgz";
+    const build = setup.perforceBuild(platform);
+
+    // These are the downloads we support today:
+    // https://cdist2.perforce.com/perforce/r21.2/bin.linux26x86_64/helix-core-server.tgz
+    // https://cdist2.perforce.com/perforce/r21.2/bin.ntx64/helix-core-server.zip
+    // https://cdist2.perforce.com/perforce/r21.2/bin.macosx1015x86_64/helix-core-server.tgz
+
+    // From what I can tell tool-cache does not like working with non archives.  We do not distribute p4 as a stand alone archive
+    // download the server archive and we will only cache the p4 binary
+    const url = `${base_url}/r${p4Version}/bin.${build}/helix-core-server.${extension}`;
+    core.debug(`Starting download using URL: ${url}`);
+
+    // On Windows `ExtractToDirectory` DotNet is used first to attempt the extract the archive.  If this fails it switches over to `Expand-Archive` (PowerShell).
+    // PowerShell fails because the downloaded file does not have a file extension
+    // On selfhosted Windows ExtractToDirectory must not be available so both methods fail to expand.
+    // Provide a destination for the download so we can guarantee that the file has an extension
+    const dest = path.join(
+      process.env["RUNNER_TEMP"] || "",
+      `${uuidv4()}.${extension}`
+    );
+
+    fs.promises.mkdir(path.dirname(dest), { recursive: true });
+    const pathToCLIZip = await tc.downloadTool(url, dest);
+    const pathToCLI =
+      platform === "windows"
+        ? await tc.extractZip(pathToCLIZip)
+        : await tc.extractTar(pathToCLIZip);
+
+    if (!pathToCLIZip || !pathToCLI) {
+      throw new Error(`Unable to download p4 from ${url}`);
+    }
+    const cachedPath = await tc.cacheDir(
+      pathToCLI,
+      "p4",
+      setup.p4SemVersion(p4Version)
+    );
+    core.addPath(cachedPath);
+  }
+
+  callback();
+}
+
+function main() {
   // Change all nonzero exit codes within shelljs into fatal
   // Without this p4 commands that exit with a nonzero would be ignored and GitHub Actions
   // would continue onto the next workflow step
@@ -35,37 +95,7 @@ try {
   /* eslint-disable no-undef */
   config.fatal = true;
 
-  if (core.getInput("setup") == "true") {
-    core.info(`setup specified so running setup routine`);
-    if (inputCommand || globalOptions || arguments || spec) {
-      core.warning(
-        "In setup routine but command, global_options, arguments, or spec specified.  Ignoring these inputs."
-      );
-    }
-
-    let toolPath = "";
-    toolPath = tc.find("p4", p4SemVersion);
-    if (toolPath) {
-      core.info(`Found in cache @ ${toolPath}`);
-      const allVersions = tc.findAllVersions("p4");
-      core.debug(
-        `Found the following versions of p4 in the cache: ${allVersions}`
-      );
-      // since the version of the binary we need is found just add it to the PATH
-      core.addPath(toolPath);
-    } else {
-      core.info(`p4 version ${p4Version} not found in cache`);
-      (async () => {
-        try {
-          await setup.run(p4Version);
-        } catch (error) {
-          core.setFailed(
-            `Failed to run p4 setup routine with error: ${error.message}`
-          );
-        }
-      })();
-    }
-  } else if (inputCommand == "login") {
+  if (inputCommand == "login") {
     core.debug("Login command found.");
 
     if (spec) {
@@ -199,6 +229,6 @@ try {
       );
     }
   }
-} catch (error) {
-  core.setFailed(error.message);
 }
+
+setupP4(main);

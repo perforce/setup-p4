@@ -25,14 +25,13 @@ More features to come!
     - [`working_directory`](#working_directory)
     - [`spec`](#spec)
     - [`p4_version`](#p4_version)
-    - [`setup`](#setup)
   - [Configuration](#configuration)
     - [Environment Variables](#environment-variables)
     - [Secrets](#secrets)
   - [Outputs](#outputs)
     - [Output Usage](#output-usage)
   - [Versioning](#versioning)
-  - [What This Action Does](#what-this-action-does)
+  - [Helpers](#helpers)
     - [p4 login](#p4-login)
     - [`STDIN` required](#stdin-required)
     - [Everything Else](#everything-else)
@@ -58,39 +57,63 @@ More features to come!
 
 Add the Action to your [GitHub Workflow](https://docs.github.com/en/actions/learn-github-actions#creating-a-workflow-file) like so:
 
+Start by creating [GitHub Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) for the following values
 
+- P4PORT
+- P4USER
+- P4PASSWD
 
-This will download, install, and add the P4 CLI into the `PATH`:
+Example:
 
-```      # Install p4 cli
+```bash
+P4PORT="ssl:helixcore.example.com:1666"
+P4USER="ci"
+P4PASSWD="mysecurepassword"
+```
+
+Define a job with environment variables that will be available for all steps:
+
+``` yaml
+jobs:
+  quickstart:
+    runs-on: ubuntu-latest
+    name: quickstart
+
+    env:
+      P4PORT: ${{ secrets.P4PORT }}
+      P4USER: ${{ secrets.P4USER }}
+      P4PASSWD: ${{ secrets.P4PASSWD }}
+```
+
+Add a step that uses `perforce/setup-p4@v1` with your required version of p4; this will download, install, and add the P4 CLI to the `PATH`:
+
+```yaml
+# Install p4 cli
 steps:
   - uses: perforce/setup-p4@v1
     with:
       p4_version: 21.2
 ```
 
+This will perform a `p4 login` utilizing a GitHub Secret for the password:
 
-
-This will perform a `p4 login` utilizng a GitHub Secret for the password:
-
-```      # Authenticate to Helix Core using P4PASSWD GitHub Secret
+``` yaml
+# Authenticate to Helix Core using P4PASSWD GitHub Secret
 steps:
-	- uses: perforce/setup-p4@v1
-		with:
-			command: login
-    env:
-			P4PASSWD: ${{ secrets.P4PASSWD }}
+  - uses: perforce/setup-p4@v1
+    with:
+      command: login
 ```
-
 
 
 This will run `p4 depots`
 
-```steps:
+``` yaml
+# List depots in Helix Core
 steps:
-	- uses: perforce/setup-p4@v1
-		with:
-			command: depots
+  - uses: perforce/setup-p4@v1
+    with:
+      command: depots
 ```
 
 
@@ -114,7 +137,6 @@ Review the [quickstart.yml](examples/quickstart.yml) for an example workflow tha
 | `working_directory` | directory to change into before running p4 `command`         | no       |         |
 | `spec`              | spec content that is fed into p4 stdin to create/update resources | no       |         |
 | `p4_version`        | version of p4 binary to download and cache | no       |  21.2       |
-| `setup`        | used to trigger the setup routine that installs the p4 CLI | no       |  false       |
 
 
 
@@ -152,10 +174,6 @@ If `spec` is provided the contents of `spec` will be passed to the `STDIN` of th
 `p4_version` defines the version of the `p4` binary that will be downloaded and cached.  `p4_version` should only be specified in a `setup` GitHub Action Step. In this step the it will check if the specified version is already present, if it is not it will be loaded, cached, and added to the `$PATH`.  All subsequent steps will be able to use the `p4` found in the `$PATH`.
 
 See our [CI workflows](https://github.com/perforce/setup-p4/tree/master/.github/workflows) for examples.
-
-#### `setup`
-
-`setup` is used to trigger the download, installation, and caching of the p4 CLI.  
 
 
 
