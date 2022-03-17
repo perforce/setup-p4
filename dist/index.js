@@ -13578,6 +13578,7 @@ const cwd = core.getInput("working_directory");
 // To allow using environment variables in working_directory drop down 
 // to the shell to expand the environment variables. 
 // trim off any leading or trailing whitespace 
+// remove any single or double quotes.
 const expanded_cwd = exec(`echo "${cwd}"`)
   .trim()
   .replace(/['"]+/g, '');
