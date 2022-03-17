@@ -1,8 +1,6 @@
-# :gear: `setup-p4` [![](https://github.com/perforce/setup-p4/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/perforce/setup-p4/actions/workflows/ci.yml)  [![GitHub tag](https://img.shields.io/github/v/tag/perforce/setup-p4?sort=semver)](https://github.com/perforce/setup-p4/tags)
+# :gear: `setup-p4` [![](https://github.com/perforce/setup-p4/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/perforce/setup-p4/actions/workflows/ci.yml)
 
 > GitHub Action for running Perforce Helix Core P4 CLI [commands](https://www.perforce.com/manuals/cmdref/Content/CmdRef/commands.html).
-
-
 
 The `perforce/setup-p4` action is a JavaScript Action that sets up Perforce Helix Core P4 CLI in your GitHub Actions workflow by downloading a specific version of Perforce Helix Core CLI and adding it to the `PATH`.
 
