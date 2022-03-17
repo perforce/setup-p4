@@ -209,12 +209,12 @@ All p4 commands will require valid authentication to your Helix Core server.  Mo
   uses: perforce/setup-p4@v1
   with:
     command: login
-    global_options: '-p helixcore.example.com:1666 -u andy'
+    global_options: '-p helixcore.example.com:1666 -u joe'
     env:
     	P4PASSWD: ${{ secrets.P4PASSWD }}
 ```
 
-To use the above step your Github Repository will need to have a Secret named `P4PASSWD`and the contents will need to be the Helix Core password of the user you want to authenticate as.
+To use the above step your GitHub Repository will need to have a Secret named `P4PASSWD`and the contents will need to be the Helix Core password of the user you want to authenticate as.
 
 You can name your GitHub Repository Secret anything you would like but the Action expects you to set the environment variable `P4PASSWD` value to your secret.
 
@@ -273,7 +273,7 @@ However, you will not get automatic security updates or new features without exp
 
 After running the setup routine, subsequent steps in the same job can run arbitrary P4 CLI commands using [the GitHub Actions `run` syntax](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstepsrun). This allows most P4 CLI commands to work exactly like they do on your local command line.  Take a look at [setup-only.yml](examples/setup-only.yml) for an example of what this looks like.
 
-Alternativly to running P4 CLI commands using the GitHub ACtions `run` syntax you can use helpers that are provided by the `setup-p4` action. 
+Alternatively to running P4 CLI commands using the GitHub ACtions `run` syntax you can use helpers that are provided by the `setup-p4` action. 
 
 
 
