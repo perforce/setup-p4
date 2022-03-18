@@ -34,6 +34,12 @@ core.debug(`spec is: ${spec}`);
 core.debug(`working directory is set to: ${cwd}`);
 core.debug(`expanded working directory is set to: ${expanded_cwd}`);
 
+if (inputCommand === "") {
+  core.setFailed(
+    "Please provide a `command` to run."
+  );        
+}
+
 async function setupP4(callback) {
   let toolPath = "";
   toolPath = tc.find("p4", setup.p4SemVersion(p4Version));
@@ -167,9 +173,8 @@ function main() {
       if (args.includes("-i")) {
         core.debug("`arguments` includes -i which is required");
       } else {
-        // TODO: once project name is set and public add URL to example in this message
         core.setFailed(
-          "spec being used but `arguments` does not included `-i`"
+          "spec being used but `arguments` does not included `-i`  See README for more details: https://github.com/perforce/setup-p4#spec"
         );
       }
 
