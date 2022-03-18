@@ -53,8 +53,6 @@ More features to come!
 
 ### Quickstart
 
-Add the Action to your [GitHub Workflow](https://docs.github.com/en/actions/learn-github-actions#creating-a-workflow-file) like so:
-
 Start by creating [GitHub Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) for the following values
 
 - P4PORT
@@ -68,6 +66,12 @@ P4PORT="ssl:helixcore.example.com:1666"
 P4USER="ci"
 P4PASSWD="mysecurepassword"
 ```
+
+
+
+Add the `setup-p4` GitHub Action to your [GitHub Workflow](https://docs.github.com/en/actions/learn-github-actions#creating-a-workflow-file) like so:
+
+
 
 Define a job with environment variables that will be available for all steps:
 
@@ -83,37 +87,30 @@ jobs:
       P4PASSWD: ${{ secrets.P4PASSWD }}
 ```
 
-Add a step that uses `perforce/setup-p4@v1` with your required version of p4; this will download, install, and add the P4 CLI to the `PATH`:
-
-```yaml
-# Install p4 cli
-steps:
-  - uses: perforce/setup-p4@v1
-    with:
-      p4_version: 21.2
-```
-
-This will perform a `p4 login` utilizing a GitHub Secret for the password:
+Add a step that uses `perforce/setup-p4@v1`:
 
 ``` yaml
-# Authenticate to Helix Core using P4PASSWD GitHub Secret
 steps:
   - uses: perforce/setup-p4@v1
     with:
       command: login
+      p4_version: 21.2
 ```
 
+The above step will do the following:
 
-This will run `p4 depots`
+- based on `p4_version`, download, install, and add the P4 CLI to the `PATH`:
+- execute `p4 login` utilizing a GitHub Secret for the password with your 
+
+
+Now add a simple step that verifies authentication by running the `p4 depots` command:
 
 ``` yaml
-# List depots in Helix Core
 steps:
   - uses: perforce/setup-p4@v1
     with:
       command: depots
 ```
-
 
 
 Review the [quickstart.yml](examples/quickstart.yml) for an example workflow that:
@@ -132,7 +129,7 @@ Review the [quickstart.yml](examples/quickstart.yml) for an example workflow tha
 | `command`           | p4 CLI command to execute                                  | yes      |         |
 | `global_options`    | p4 CLI arguments that are supplied on the command line before the `command` | no       |         |
 | `arguments`         | arguments that are p4 CLI `command` specific               | no       |         |
-| `working_directory` | directory to change into before running p4 `command`         | no       |         |
+| `working_directory` | directory to change into before running p4 `command`         | no       |   `.`      |
 | `spec`              | spec content that is fed into p4 stdin to create/update resources | no       |         |
 | `p4_version`        | version of p4 binary to download and cache | no       |  21.2       |
 
