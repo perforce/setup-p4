@@ -2,15 +2,16 @@
 
 > GitHub Action for running Perforce Helix Core P4 CLI [commands](https://www.perforce.com/manuals/cmdref/Content/CmdRef/commands.html).
 
-The `perforce/setup-p4` action is a JavaScript Action that sets up Perforce Helix Core P4 CLI in your GitHub Actions workflow by downloading a specific version of Perforce Helix Core CLI and adding it to the `PATH`.
+The `perforce/setup-p4` action is a JavaScript Action that sets up Perforce Helix Core P4 CLI in your GitHub Actions workflow, allowing you to easily create interactions between your repository and your Perforce server.
 
 In addition, the Action includes the following features:
 
 - This Action supports all GitHub Hosted and Self-Hosted Runner Operating Systems
-- Defaults to latest version of P4 CLI but can be overwritten 
+- Defaults to latest version of P4 CLI but can be set to a specific version 
 - All P4 CLI commands can be run from the Action
-- Optionally use GitHub Action Inputs to ease setting up your P4 CLI commands
-- The connection details of the Perforce Helix Core servers used by P4 CLI can be stored as secrets
+- Adds `p4` to `PATH` for easy access to P4 CLI
+- Optionally use GitHub Action Inputs to simplify setting up P4 CLI workflows
+- Connection details and credentials can be securely stored in the GitHub Action secrets
 
 More features to come!
 
@@ -30,6 +31,7 @@ More features to come!
     - [Output Usage](#output-usage)
   - [Versioning](#versioning)
   - [Helpers](#helpers)
+  - [Command Structure](#command-structure)
     - [p4 login](#p4-login)
     - [`STDIN` required](#stdin-required)
     - [Everything Else](#everything-else)
@@ -53,7 +55,7 @@ More features to come!
 
 ### Quickstart
 
-Start by creating [GitHub Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) for the following values
+Start by creating [GitHub Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) for the following values. We will use these values later to connect to your Helix Core server.
 
 - P4PORT
 - P4USER
@@ -99,7 +101,7 @@ steps:
 
 The above step will do the following:
 
-- based on `p4_version`, download, install, and add the P4 CLI to the `PATH`:
+- based on `p4_version`, download, install, and add the P4 CLI to `PATH`. (Note: omitting this line will default to the latest version of the P4 CLI)
 - execute `p4 login` utilizing a GitHub Secret for the password with your 
 
 
@@ -124,14 +126,14 @@ Review the [quickstart.yml](examples/quickstart.yml) for an example workflow tha
 
 ### Inputs
 
-| Name                | Description                                                  | Required | Default |
-| ------------------- | ------------------------------------------------------------ | -------- | ------- |
-| `command`           | p4 CLI command to execute                                  | yes      |         |
-| `global_options`    | p4 CLI arguments that are supplied on the command line before the `command` | no       |         |
-| `arguments`         | arguments that are p4 CLI `command` specific               | no       |         |
-| `working_directory` | directory to change into before running p4 `command`         | no       |   `.`      |
-| `spec`              | spec content that is fed into p4 stdin to create/update resources | no       |         |
-| `p4_version`        | version of p4 binary to download and cache | no       |  21.2       |
+| Name                | Description                                                                                         | Required | Default |
+| ------------------- | --------------------------------------------------------------------------------------------------- | -------- | ------- |
+| `command`           | p4 CLI [command](#command) to execute                                                               | yes      |         |
+| `global_options`    | p4 CLI [global options](#global_options) that are supplied on the command line before the `command` | no       |         |
+| `arguments`         | arguments specific to the P4 `command` being used                                                   | no       |         |
+| `working_directory` | directory to change into before running p4 `command`                                                | no       | `.`     |
+| `spec`              | spec content that is fed into p4 stdin to create/update resources                                   | no       |         |
+| `p4_version`        | version of p4 CLI to download and cache                                                             | no       | 21.2    |
 
 
 
@@ -162,7 +164,7 @@ The Action will change directory to what is provided in `working_directory`.  No
 
 #### `spec`
 
-If `spec` is provided the contents of `spec` will be passed to the `STDIN` of the p4 command.  In `arguments` include the option `-i` so that p4 reads from `STDIN` instead of opening your `P4EDITOR`.
+If `spec` is provided the contents of `spec` will be passed to the `STDIN` of the p4 command.  In `arguments` include the option `-i` so that p4 reads from `STDIN` instead of opening your `P4EDITOR`. (See `p4 client` in [quickstart.yml](examples/quickstart.yml) for an example.)
 
 #### `p4_version`
 
@@ -182,6 +184,7 @@ The [P4 CLI can utilize environment variables](https://www.perforce.com/manuals/
 - Job
 - Step
 
+Note: Because workflows are visible to other users, you should use [secrets](#secrets) to store sensitive information such as passwords.
 
 ```yaml
 - name: p4 sync
@@ -209,17 +212,17 @@ All p4 commands will require valid authentication to your Helix Core server.  Mo
     	P4PASSWD: ${{ secrets.P4PASSWD }}
 ```
 
-To use the above step your GitHub Repository will need to have a Secret named `P4PASSWD`and the contents will need to be the Helix Core password of the user you want to authenticate as.
+To use the above step your GitHub Repository will need to have a Secret named `P4PASSWD` and the contents will need to be the Helix Core password of the user you want to authenticate as.
 
-You can name your GitHub Repository Secret anything you would like but the Action expects you to set the environment variable `P4PASSWD` value to your secret.
+You can name your GitHub Repository Secret anything you would like but the Action expects you to set the environment variable `P4PASSWD` to your user's Helix Core password.
 
 ### Outputs
 
 When using the provided helpers this action creates three outputs for all p4 commands: stdout, stderr, and exit_code.  The following outputs are available for subsequent steps:
 
-- `stdout` - The STDOUT stream of the call to the `p4` binary.
-- `stderr` - The STDERR stream of the call to the `p4` binary.
-- `exit_code` - The exit code of the call to the `p4` binary.
+- `stdout` - The STDOUT stream of the call to the `p4` CLI.
+- `stderr` - The STDERR stream of the call to the `p4` CLI.
+- `exit_code` - The exit code of the call to the `p4` CLI.
 
 
 
@@ -268,7 +271,7 @@ However, you will not get automatic security updates or new features without exp
 
 After running the setup routine, subsequent steps in the same job can run arbitrary P4 CLI commands using [the GitHub Actions `run` syntax](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstepsrun). This allows most P4 CLI commands to work exactly like they do on your local command line.  Take a look at [setup-only.yml](examples/setup-only.yml) for an example of what this looks like.
 
-Alternatively to running P4 CLI commands using the GitHub ACtions `run` syntax you can use helpers that are provided by the `setup-p4` action. 
+Alternatively to running P4 CLI commands using the GitHub Actions `run` syntax you can use helpers that are provided by the `setup-p4` action. 
 
 
 
@@ -280,6 +283,7 @@ Benefits to using the helpers:
 
 
 
+### Command Structure
 
 1) Installs the p4 CLI
 2) Builds up a p4 command based on your inputs.  There are three scenarios that define how the command is built up
@@ -328,11 +332,11 @@ ${COMMAND}
 
 You can find some example workflows that use `setup-p4` in the examples directory.  
 
-| Name                | Description                                                  | 
-| ------------------- | ------------------------------------------------------------ | 
-| Quickstart          | Basic example that performs a p4 login, creates a workspaces, and sync files down from Helix Core.                                    | 
-| Setup Only          | This example performs the same steps as the Quickstart example but does not utilize any of the Action helper inputs |
-| Action Outputs      | Echos the stdout, stderr, and exit code                   | 
+| Name           | Description                                                                                                         |
+| -------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Quickstart     | Basic example that performs a p4 login, creates a workspaces, and sync files down from Helix Core.                  |
+| Setup Only     | This example performs the same steps as the Quickstart example but does not utilize any of the Action helper inputs |
+| Action Outputs | Echos the stdout, stderr, and exit code                                                                             |
 
 Additionally here are example projects that use `setup-p4`
 
@@ -440,7 +444,7 @@ Here are the steps for contributing:
 4) run `npm run build` to package the action
 5) create a `.actrc` and `act.secrets` file for testing locally (examples below)
 6) run `act --job unit` , `act --job smoke`, and `act --job integration` before submitting a PR
-   1) Note that the integration tests will require a running Helix Core
+   1) Note that the integration tests will require a running Helix Core server.
 7) commit changes and submit PR
 
 ### act
