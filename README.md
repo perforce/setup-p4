@@ -193,7 +193,7 @@ The [P4 CLI can utilize environment variables](https://www.perforce.com/manuals/
     arguments: -f
 ```
 
-Reference the `example.yml.disable` Workflow file in this repository for examples of setting environment variables at each level.
+Reference the [quickstart.yml](https://github.com/perforce/setup-p4/blob/master/examples/quickstart.yml#L10) Workflow file in this repository for examples of setting environment variables at each level.
 
 #### Secrets
 
