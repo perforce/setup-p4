@@ -31,6 +31,6 @@ jobs:
       # https://github.com/actions/toolkit/blob/master/docs/action-versioning.md#versioning
       - uses: aboutte/build-and-tag-action@v2.1
         with:
-          additional_files: 'dist/license.txt,dist/exec-child.js'
+          additional_files: 'dist/LICENSE,dist/exec-child.js'
         env:
           GITHUB_TOKEN: ${{ github.token }}
