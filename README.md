@@ -1,3 +1,5 @@
+![Support](https://img.shields.io/badge/Support-Community-yellow.svg)
+
 # :gear: `setup-p4` [![](https://github.com/perforce/setup-p4/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/perforce/setup-p4/actions/workflows/ci.yml)
 
 > GitHub Action for running Perforce Helix Core P4 CLI [commands](https://www.perforce.com/manuals/cmdref/Content/CmdRef/commands.html).
@@ -401,8 +403,6 @@ Development of this module is sponsored by [Perforce](https://perforce.com).
 
 
 ## Support
-
-![Support](https://img.shields.io/badge/Support-Community-yellow.svg)
 
 setup-p4 is a community supported project. Pull requests and issues are the responsibility of the project's moderator(s); this may be a vetted individual or team with members outside of the Perforce organization. All issues should be reported and managed via GitHub (not via Perforce's standard support process).
 
