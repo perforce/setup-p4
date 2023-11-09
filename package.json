@@ -10,6 +10,9 @@
     "lint": "eslint index.js",
     "format": "prettier --write index.js"
   },
+  "engines": {
+    "node": ">=20.0.0 <21.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/perforce/setup-p4.git"
@@ -29,7 +32,7 @@
   "homepage": "https://github.com/perforce/setup-p4",
   "dependencies": {
     "@actions/core": "^1.10.0",
-    "@actions/tool-cache": "^2.0.1",    
+    "@actions/tool-cache": "^2.0.1",
     "shelljs": "^0.8.5",
     "uuid": "^9.0.0"
   },

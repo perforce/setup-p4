@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, macos-10.15, macos-11, windows-2022, windows-2019]
+        os: [ubuntu-20.04, ubuntu-22.04, macos-11, macos-12, windows-2022, windows-2019]
 
     env:
       P4PORT: ${{ secrets.P4PORT }}

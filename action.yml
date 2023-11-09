@@ -32,7 +32,7 @@ outputs:
   exit_code:
     description: Exit code from p4 command
 runs:
-  using: node12
+  using: node16
   main: dist/index.js
 branding:
   color: blue
