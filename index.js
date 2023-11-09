@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
 const path = require("path");
 const setup = require("./lib/setup");
+const { execSync } = require('child_process');
 
 const inputCommand = core.getInput("command");
 const globalOptions = core.getInput("global_options");
@@ -16,11 +17,11 @@ const command = `p4 ${globalOptions} ${inputCommand} ${args}`;
 const platform = os.platform();
 const cwd = core.getInput("working_directory");
 
-// To allow using environment variables in working_directory drop down 
-// to the shell to expand the environment variables. 
-// trim off any leading or trailing whitespace 
+// To allow using environment variables in working_directory drop down
+// to the shell to expand the environment variables.
+// trim off any leading or trailing whitespace
 // remove any single or double quotes.
-const expanded_cwd = exec(`echo "${cwd}"`)
+const expanded_cwd = execSync(`echo "${cwd}"`)
   .trim()
   .replace(/['"]+/g, '');
 
@@ -37,7 +38,7 @@ core.debug(`expanded working directory is set to: ${expanded_cwd}`);
 if (inputCommand === "") {
   core.setFailed(
     "Please provide a `command` to run."
-  );        
+  );
 }
 
 async function setupP4(callback) {
